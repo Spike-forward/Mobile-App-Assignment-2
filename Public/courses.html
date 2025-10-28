@@ -4,7 +4,12 @@
   <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="程式教學">
     <title>程式教學平台 - 課程清單</title>
+    <link rel="manifest" href="manifest.json">
+    <link rel="apple-touch-icon" href="https://via.placeholder.com/180/667eea/ffffff?text=Code">
     <!-- Ionic CDN -->
     <script type="module" src="https://cdn.jsdelivr.net/npm/@ionic/core/dist/ionic/ionic.esm.js"></script>
     <script nomodule src="https://cdn.jsdelivr.net/npm/@ionic/core/dist/ionic/ionic.js"></script>
@@ -501,6 +506,28 @@
         border-radius: 15px;
         padding: 20px;
         box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+        max-height: calc(100vh - 250px);
+        overflow-y: auto;
+        overflow-x: hidden;
+      }
+
+      /* Custom scrollbar for courses content */
+      .courses-content::-webkit-scrollbar {
+        width: 8px;
+      }
+
+      .courses-content::-webkit-scrollbar-track {
+        background: #f1f1f1;
+        border-radius: 10px;
+      }
+
+      .courses-content::-webkit-scrollbar-thumb {
+        background: #667eea;
+        border-radius: 10px;
+      }
+
+      .courses-content::-webkit-scrollbar-thumb:hover {
+        background: #5568d3;
       }
 
       .item-content {

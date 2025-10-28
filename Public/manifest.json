@@ -1,0 +1,54 @@
+{
+  "name": "程式教學平台",
+  "short_name": "程式教學",
+  "description": "線上程式設計學習平台，提供多種程式語言課程",
+  "start_url": "/index.html",
+  "display": "standalone",
+  "background_color": "#f0f2ff",
+  "theme_color": "#667eea",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "https://via.placeholder.com/192/667eea/ffffff?text=Code",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "https://via.placeholder.com/512/667eea/ffffff?text=Code",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": [
+    "education"
+  ],
+  "screenshots": [],
+  "shortcuts": [
+    {
+      "name": "課程清單",
+      "short_name": "課程",
+      "description": "查看所有可用課程",
+      "url": "/courses.html",
+      "icons": [
+        {
+          "src": "https://via.placeholder.com/96/667eea/ffffff?text=C",
+          "sizes": "96x96"
+        }
+      ]
+    },
+    {
+      "name": "我的收藏",
+      "short_name": "收藏",
+      "description": "查看我的收藏課程",
+      "url": "/favorites.html",
+      "icons": [
+        {
+          "src": "https://via.placeholder.com/96/667eea/ffffff?text=F",
+          "sizes": "96x96"
+        }
+      ]
+    }
+  ]
+}

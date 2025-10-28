@@ -164,9 +164,32 @@
               </div>
               <div class="info-item full-width">
                 <label>感興趣的課程</label>
-                <div class="selected-courses" id="selectedCourses">
+                <div class="selected-courses" id="selectedCourses"
+                  style="min-height: 50px; padding: 10px; background: #f8f9fa; border-radius: 8px; margin-bottom: 10px;">
                   <!-- 選中的課程將在這裡顯示 -->
                 </div>
+                <button type="button" class="btn btn-outline" onclick="showCourseSelectionModal()" style="width: 100%;">
+                  <i class="fas fa-plus"></i> 添加/管理感興趣的課程
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- 課程選擇模態框 -->
+          <div id="courseSelectionModal" class="modal" style="display: none;">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h3><i class="fas fa-book"></i> 選擇感興趣的課程</h3>
+                <button class="modal-close" onclick="closeCourseSelectionModal()">&times;</button>
+              </div>
+              <div class="modal-body">
+                <div class="courses-grid-selection" id="modalCourseList">
+                  <!-- 課程選項將由 JavaScript 動態生成 -->
+                </div>
+              </div>
+              <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeCourseSelectionModal()">取消</button>
+                <button class="btn btn-primary" onclick="saveSelectedCourses()">儲存</button>
               </div>
             </div>
           </div>
@@ -226,6 +249,7 @@
     <script src="../Private/database/secureDB.js"></script>
     <script src="../Private/database/userRepository.js"></script>
     <script src="../Private/database/sessionRepository.js"></script>
+    <script src="../Private/data/coursesData.js"></script>
     <script src="../Private/auth/api.js"></script>
     <script src="../Private/auth/session.js"></script>
     <script src="../Private/favorites/favoritesAPI.js"></script>
@@ -401,10 +425,19 @@
             learningGoals: document.getElementById('learningGoals').value
           };
 
-          // 更新使用者資料
-          const result = await window.userRepo.updateUser(currentUser.id, updatedUser);
+          // 更新使用者資料 - 使用 userRepository 而不是 userRepo
+          let result;
+          if (window.userRepository && window.userRepository.updateUser) {
+            result = await window.userRepository.updateUser(currentUser.id, updatedUser);
+          } else if (window.userRepo && window.userRepo.updateUser) {
+            result = await window.userRepo.updateUser(currentUser.id, updatedUser);
+          } else {
+            // Fallback to localStorage update
+            const userRepo = new UserRepository();
+            result = await userRepo.updateUser(currentUser.id, updatedUser);
+          }
 
-          if (result.success) {
+          if (result && result.success) {
             // 更新 session
             window.sessionManager.updateUser(updatedUser);
             currentUser = updatedUser;
@@ -421,11 +454,11 @@
 
             showNotification('個人資料已成功更新！', 'success');
           } else {
-            showNotification('更新失敗：' + result.error, 'error');
+            showNotification('更新失敗：' + (result?.error || '未知錯誤'), 'error');
           }
         } catch (error) {
           console.error('儲存個人資料失敗:', error);
-          showNotification('儲存失敗，請稍後再試', 'error');
+          showNotification('儲存失敗：' + error.message, 'error');
         }
       }
 
@@ -503,6 +536,105 @@
         }
       }
 
+      // 顯示課程選擇模態框
+      let selectedCourseTitles = [];
+
+      function showCourseSelectionModal() {
+        const modal = document.getElementById('courseSelectionModal');
+        const modalCourseList = document.getElementById('modalCourseList');
+
+        if (!modal || !modalCourseList) return;
+
+        // 載入當前已選的課程
+        selectedCourseTitles = currentUser.interestedCourses || [];
+
+        // 載入所有課程到模態框
+        const allCourses = courses || window.coursesData || [];
+
+        modalCourseList.innerHTML = allCourses.map(course => {
+          const isSelected = selectedCourseTitles.includes(course.title);
+          return `
+            <div class="course-selection-item ${isSelected ? 'selected' : ''}" 
+                 onclick="toggleCourseSelection('${course.title}')">
+              <h4>${course.title}</h4>
+              <p>${course.language || '多語言'}</p>
+              <span class="course-selection-badge" style="background: ${course.level === '高級' ? '#ff6b6b' : course.level === '中級' ? '#4ecdc4' : '#95e1d3'}">${course.level}</span>
+            </div>
+          `;
+        }).join('');
+
+        modal.style.display = 'block';
+      }
+
+      // 關閉課程選擇模態框
+      function closeCourseSelectionModal() {
+        const modal = document.getElementById('courseSelectionModal');
+        if (modal) {
+          modal.style.display = 'none';
+        }
+      }
+
+      // 切換課程選擇
+      function toggleCourseSelection(courseTitle) {
+        const index = selectedCourseTitles.indexOf(courseTitle);
+        if (index > -1) {
+          selectedCourseTitles.splice(index, 1);
+        } else {
+          selectedCourseTitles.push(courseTitle);
+        }
+
+        // 更新視覺效果
+        const item = event.currentTarget;
+        item.classList.toggle('selected');
+      }
+
+      // 儲存選中的課程
+      async function saveSelectedCourses() {
+        try {
+          // 更新當前用戶的感興趣課程
+          currentUser.interestedCourses = selectedCourseTitles;
+
+          // 更新資料庫
+          let result;
+          if (window.userRepository && window.userRepository.updateUser) {
+            result = await window.userRepository.updateUser(currentUser.id, currentUser);
+          } else if (window.userRepo && window.userRepo.updateUser) {
+            result = await window.userRepo.updateUser(currentUser.id, currentUser);
+          } else {
+            // Fallback to localStorage update
+            const userRepo = new UserRepository();
+            result = await userRepo.updateUser(currentUser.id, currentUser);
+          }
+
+          if (result && result.success) {
+            // 更新 session
+            window.sessionManager.updateUser(currentUser);
+
+            // 更新顯示
+            updateSelectedCourses();
+            loadUserStats();
+
+            // 關閉模態框
+            closeCourseSelectionModal();
+
+            showNotification('已更新感興趣的課程！', 'success');
+          } else {
+            showNotification('更新失敗：' + (result?.error || '未知錯誤'), 'error');
+          }
+        } catch (error) {
+          console.error('儲存課程選擇失敗:', error);
+          showNotification('儲存失敗：' + error.message, 'error');
+        }
+      }
+
+      // 點擊模態框外部關閉
+      window.onclick = function (event) {
+        const modal = document.getElementById('courseSelectionModal');
+        if (event.target === modal) {
+          closeCourseSelectionModal();
+        }
+      }
+
       // 顯示通知
       function showNotification(message, type = 'info') {
         if (window.createNotification) {
@@ -561,6 +693,111 @@
 
       #learningGoals:not([readonly]) {
         background-color: #f8f9fa;
+      }
+
+      /* 課程選擇模態框樣式 */
+      .modal {
+        display: none;
+        position: fixed;
+        z-index: 1000;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        overflow: auto;
+        background-color: rgba(0, 0, 0, 0.4);
+      }
+
+      .modal-content {
+        background-color: #fefefe;
+        margin: 5% auto;
+        padding: 20px;
+        border: none;
+        border-radius: 15px;
+        width: 90%;
+        max-width: 800px;
+        max-height: 80vh;
+        overflow-y: auto;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+      }
+
+      .modal-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+        padding-bottom: 10px;
+        border-bottom: 2px solid #e0e0e0;
+      }
+
+      .modal-close {
+        background: none;
+        border: none;
+        font-size: 28px;
+        font-weight: bold;
+        color: #aaa;
+        cursor: pointer;
+      }
+
+      .modal-close:hover {
+        color: #000;
+      }
+
+      .modal-body {
+        margin-bottom: 20px;
+      }
+
+      .modal-footer {
+        display: flex;
+        justify-content: flex-end;
+        gap: 10px;
+        padding-top: 10px;
+        border-top: 2px solid #e0e0e0;
+      }
+
+      .courses-grid-selection {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+        gap: 15px;
+        max-height: 400px;
+        overflow-y: auto;
+      }
+
+      .course-selection-item {
+        border: 2px solid #e0e0e0;
+        border-radius: 10px;
+        padding: 15px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+      }
+
+      .course-selection-item:hover {
+        border-color: #667eea;
+        background-color: #f8f9ff;
+      }
+
+      .course-selection-item.selected {
+        border-color: #667eea;
+        background-color: #e6eaff;
+      }
+
+      .course-selection-item h4 {
+        margin: 0 0 5px 0;
+        color: #333;
+      }
+
+      .course-selection-item p {
+        margin: 0;
+        color: #666;
+        font-size: 0.9em;
+      }
+
+      .course-selection-badge {
+        display: inline-block;
+        padding: 4px 8px;
+        border-radius: 5px;
+        font-size: 0.8em;
+        margin-top: 8px;
       }
     </style>
   </body>

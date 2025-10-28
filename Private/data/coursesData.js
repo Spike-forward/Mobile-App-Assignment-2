@@ -150,8 +150,8 @@ const coursesData = [
     level: "高級",
     image: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800&h=500&fit=crop",
     imageUrl: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800&h=500&fit=crop",
-    url: "https://www.youtube.com/embed/nxAqwoLaUBw",
-    videoUrl: "https://www.youtube.com/embed/nxAqwoLaUBw",
+    url: "https://www.youtube.com/embed/7vZIc6e7COI",
+    videoUrl: "https://www.youtube.com/embed/7vZIc6e7COI",
     language: "多語言",
     category: "系統設計"
   },
