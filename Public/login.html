@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>程式教學平台 - 登入</title>
+    <link rel="stylesheet" href="index.css">
+    <link rel="stylesheet" href="responsive.css">
+    <link rel="stylesheet" href="visual.css">
+    <link rel="stylesheet" href="animations.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <div class="auth-card">
+            <div class="header">
+                <div class="logo">
+                    <i class="fas fa-code"></i>
+                    <h1>程式教學平台</h1>
+                </div>
+                <p class="subtitle">歡迎回來！請登入您的帳戶</p>
+            </div>
+
+            <form id="loginForm" class="auth-form">
+                <div class="form-group">
+                    <label for="username">使用者名稱 *</label>
+                    <div class="input-group">
+                        <i class="fas fa-user input-icon"></i>
+                        <input type="text" id="username" name="username" required>
+                    </div>
+                    <span class="error-message" id="usernameError"></span>
+                </div>
+
+                <div class="form-group">
+                    <label for="password">密碼 *</label>
+                    <div class="password-input">
+                        <div class="input-group">
+                            <i class="fas fa-lock input-icon"></i>
+                            <input type="password" id="password" name="password" required>
+                        </div>
+                        <button type="button" class="toggle-password" onclick="togglePassword('password')">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                    </div>
+                    <span class="error-message" id="passwordError"></span>
+                </div>
+
+                <div class="form-options">
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="rememberMe" name="rememberMe">
+                        <span class="checkmark"></span>
+                        記住我
+                    </label>
+                    <a href="javascript:void(0)" class="forgot-password" onclick="handleForgotPassword(event)">忘記密碼？</a>
+                </div>
+
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-sign-in-alt"></i> 登入
+                    </button>
+                </div>
+            </form>
+
+            <div class="auth-footer">
+                <p>還沒有帳戶？ <a href="index.html" class="link">立即註冊</a></p>
+            </div>
+
+            <!-- 載入動畫 -->
+            <div id="loadingOverlay" class="loading-overlay" style="display: none;">
+                <div class="loading-spinner">
+                    <i class="fas fa-spinner fa-spin"></i>
+                    <p>登入中...</p>
+                </div>
+            </div>
+
+            <!-- 忘記密碼對話框 -->
+            <div id="forgotPasswordModal" class="modal" style="display: none;">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h2>
+                            <i class="fas fa-key"></i>
+                            重設密碼
+                        </h2>
+                        <button class="modal-close" onclick="closeForgotPasswordModal()">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <p>請輸入您註冊時使用的香港電話號碼以找回您的帳戶資訊：</p>
+                        <ul class="recovery-info">
+                            <li><i class="fas fa-user"></i> 顯示您的使用者名稱</li>
+                            <li><i class="fas fa-sign-in-alt"></i> 自動填入登入表單</li>
+                        </ul>
+                        <div class="form-group">
+                            <label for="forgotPasswordInput">香港電話號碼 (格式: +852 XXXX XXXX) *</label>
+                            <div class="input-group">
+                                <i class="fas fa-phone input-icon"></i>
+                                <input type="tel" id="forgotPasswordInput" placeholder="輸入您的註冊電話號碼">
+                            </div>
+                            <span class="error-message" id="forgotPasswordError"></span>
+                            <small style="color: #666; display: block; margin-top: 5px;">
+                                <i class="fas fa-info-circle"></i> 請輸入完整電話號碼，例如：+852 1234 5678
+                            </small>
+                        </div>
+                        <div class="recovery-tips">
+                            <p><i class="fas fa-info-circle"></i> 提示：此功能將在本地查找您的帳戶並顯示使用者名稱。密碼無法重置，請妥善保管。</p>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" onclick="closeForgotPasswordModal()">
+                            取消
+                        </button>
+                        <button type="button" class="btn btn-primary" onclick="submitForgotPassword()">
+                            <i class="fas fa-paper-plane"></i> 發送
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 載入認證模組 -->
+    <script src="../Private/database/secureDB.js"></script>
+    <script src="../Private/database/userRepository.js"></script>
+    <script src="../Private/database/sessionRepository.js"></script>
+    <script src="../Private/auth/api.js"></script>
+    <script src="../Private/auth/session.js"></script>
+    
+    <script>
+        // 密碼顯示/隱藏切換
+        function togglePassword(fieldId) {
+            const field = document.getElementById(fieldId);
+            const button = field.parentElement.nextElementSibling;
+            const icon = button.querySelector('i');
+            
+            if (field.type === 'password') {
+                field.type = 'text';
+                icon.className = 'fas fa-eye-slash';
+            } else {
+                field.type = 'password';
+                icon.className = 'fas fa-eye';
+            }
+        }
+
+        // 顯示載入動畫
+        function showLoading() {
+            document.getElementById('loadingOverlay').style.display = 'flex';
+        }
+
+        // 隱藏載入動畫
+        function hideLoading() {
+            document.getElementById('loadingOverlay').style.display = 'none';
+        }
+
+        // 顯示錯誤訊息
+        function showError(fieldId, message) {
+            const errorElement = document.getElementById(fieldId + 'Error');
+            if (errorElement) {
+                errorElement.textContent = message;
+            }
+        }
+
+        // 清除錯誤訊息
+        function clearErrors() {
+            document.querySelectorAll('.error-message').forEach(error => {
+                error.textContent = '';
+            });
+        }
+
+        // 表單驗證
+        function validateForm() {
+            let isValid = true;
+            clearErrors();
+
+            const username = document.getElementById('username').value.trim();
+            const password = document.getElementById('password').value;
+
+            if (!username) {
+                showError('username', '請輸入使用者名稱');
+                isValid = false;
+            }
+
+            if (!password) {
+                showError('password', '請輸入密碼');
+                isValid = false;
+            }
+
+            return isValid;
+        }
+
+        // 登入處理
+        async function handleLogin(event) {
+            event.preventDefault();
+            
+            if (!validateForm()) {
+                return;
+            }
+
+            showLoading();
+
+            try {
+                const username = document.getElementById('username').value.trim();
+                const password = document.getElementById('password').value;
+                const rememberMe = document.getElementById('rememberMe').checked;
+
+                const result = await window.sessionManager.login(username, password);
+
+                if (result.success) {
+                    // 登入成功
+                    alert('登入成功！歡迎回來！');
+                    
+                    // 如果選擇記住我，延長 token 有效期
+                    if (rememberMe) {
+                        // 這裡可以實現記住我功能
+                        console.log('記住我功能已啟用');
+                    }
+
+                    // 跳轉到主頁面或儀表板
+                    window.location.href = 'dashboard.html';
+                } else {
+                    // 登入失敗
+                    showError('password', result.error || '登入失敗，請檢查使用者名稱和密碼');
+                }
+            } catch (error) {
+                console.error('登入錯誤:', error);
+                showError('password', '登入時發生錯誤，請稍後再試');
+            } finally {
+                hideLoading();
+            }
+        }
+
+        // 處理忘記密碼
+        function handleForgotPassword(event) {
+            event.preventDefault();
+            openForgotPasswordModal();
+        }
+
+        // 開啟忘記密碼對話框
+        function openForgotPasswordModal() {
+            document.getElementById('forgotPasswordModal').style.display = 'flex';
+            // 聚焦到輸入欄位
+            setTimeout(() => {
+                document.getElementById('forgotPasswordInput').focus();
+            }, 100);
+        }
+
+        // 關閉忘記密碼對話框
+        function closeForgotPasswordModal() {
+            document.getElementById('forgotPasswordModal').style.display = 'none';
+            document.getElementById('forgotPasswordInput').value = '';
+            document.getElementById('forgotPasswordError').textContent = '';
+        }
+
+        // 提交忘記密碼請求
+        async function submitForgotPassword() {
+            const phone = document.getElementById('forgotPasswordInput').value.trim();
+            const errorElement = document.getElementById('forgotPasswordError');
+            
+            if (!phone) {
+                errorElement.textContent = '請輸入香港電話號碼';
+                return;
+            }
+
+            // 標準化電話號碼格式（移除所有空格和特殊字符）
+            const cleanPhone = phone.replace(/[\s\-\(\)]/g, '');
+            
+            // 驗證基本格式（8位數字或帶區號）
+            if (!/\d{4}\d{4}/.test(cleanPhone) && !/[\+]{0,1}852\d{8}/.test(cleanPhone)) {
+                errorElement.textContent = '請輸入有效的香港電話號碼（8位數字）';
+                return;
+            }
+
+            // 清除錯誤訊息
+            errorElement.textContent = '';
+
+            try {
+                // 嘗試在本地資料庫中查找使用者
+                const userRepo = window.userRepository;
+                let username = null;
+                let userEmail = null;
+                let foundPhone = null;
+                
+                if (!userRepo) {
+                    throw new Error('資料庫未初始化');
+                }
+
+                // 使用 findByPhone 方法（如果存在）
+                if (typeof userRepo.findByPhone === 'function') {
+                    try {
+                        const result = await userRepo.findByPhone(phone);
+                        if (result.success && result.data) {
+                            username = result.data.username;
+                            userEmail = result.data.email;
+                            foundPhone = result.data.phone;
+                            console.log('User found via findByPhone:', username);
+                        }
+                    } catch (error) {
+                        console.log('findByPhone failed, trying alternative method:', error);
+                    }
+                }
+                
+                // 如果還沒找到，嘗試從所有用戶中查找
+                if (!username) {
+                    try {
+                        const allUsersResult = await userRepo.getAllUsers();
+                        console.log('All users result:', allUsersResult);
+                        
+                        if (allUsersResult && allUsersResult.success && allUsersResult.data) {
+                            // 標準化輸入的電話號碼用於比較
+                            const inputPhoneDigits = cleanPhone.replace(/\D/g, ''); // 只保留數字
+                            
+                            // 查找電話號碼匹配的用戶
+                            const user = allUsersResult.data.find(u => {
+                                if (!u.phone) {
+                                    return false;
+                                }
+                                
+                                // 標準化數據庫中的電話號碼
+                                const storedPhone = u.phone.toString().replace(/[\s\-\(\)]/g, '');
+                                const storedPhoneDigits = storedPhone.replace(/\D/g, ''); // 只保留數字
+                                
+                                console.log('Comparing:', {
+                                    input: inputPhoneDigits,
+                                    stored: storedPhoneDigits,
+                                    user: u.username
+                                });
+                                
+                                // 靈活匹配：完全匹配或後8位匹配
+                                if (storedPhoneDigits === inputPhoneDigits) {
+                                    return true;
+                                }
+                                
+                                // 檢查是否是後8位數碼匹配（忽略區號）
+                                if (inputPhoneDigits.length >= 8 && storedPhoneDigits.length >= 8) {
+                                    const inputLast8 = inputPhoneDigits.slice(-8);
+                                    const storedLast8 = storedPhoneDigits.slice(-8);
+                                    if (inputLast8 === storedLast8) {
+                                        return true;
+                                    }
+                                }
+                                
+                                return false;
+                            });
+                            
+                            if (user) {
+                                username = user.username;
+                                userEmail = user.email;
+                                foundPhone = user.phone;
+                                console.log('User found:', username);
+                            } else {
+                                console.log('No user found with phone:', phone);
+                                console.log('Available users:', allUsersResult.data.map(u => ({
+                                    username: u.username,
+                                    phone: u.phone
+                                })));
+                            }
+                        }
+                    } catch (error) {
+                        console.error('查找使用者失敗:', error);
+                        throw error;
+                    }
+                }
+
+                // 顯示帳戶資訊
+                if (username) {
+                    // 顯示詳細的帳戶恢復對話框
+                    const confirmed = confirm(
+                        `已找到您的帳戶！\n\n` +
+                        `使用者名稱：${username}\n` +
+                        `電話號碼：${foundPhone || phone}\n` +
+                        `電子郵件：${userEmail || '未提供'}\n\n` +
+                        `注意：本系統使用瀏覽器本地儲存，密碼無法重置。\n\n` +
+                        `如果您忘記密碼，請：\n` +
+                        `1. 聯絡系統管理員\n` +
+                        `2. 清除瀏覽器資料並重新註冊\n\n` +
+                        `點擊「確定」繼續登入，或點擊「取消」關閉此視窗。`
+                    );
+                    
+                    if (confirmed) {
+                        // 關閉忘記密碼對話框
+                        closeForgotPasswordModal();
+                        
+                        // 自動填入使用者名稱到登入表單
+                        document.getElementById('username').value = username;
+                        document.getElementById('password').focus();
+                    }
+                } else {
+                    alert(
+                        `找不到與 ${phone} 關聯的帳戶。\n\n` +
+                        `可能的原因：\n` +
+                        `- 電話號碼不正確\n` +
+                        `- 帳戶不存在\n` +
+                        `- 您尚未註冊\n\n` +
+                        `請確認您註冊時使用的電話號碼，或重新註冊。`
+                    );
+                }
+                
+                // 關閉對話框
+                if (!username) {
+                    closeForgotPasswordModal();
+                }
+            } catch (error) {
+                console.error('發送重設請求失敗:', error);
+                errorElement.textContent = '查詢失敗，請稍後再試';
+            }
+        }
+
+        // 點擊外部關閉對話框
+        window.onclick = function(event) {
+            const modal = document.getElementById('forgotPasswordModal');
+            if (event.target === modal) {
+                closeForgotPasswordModal();
+            }
+        }
+
+        // 頁面載入時初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            // 檢查是否已經登入
+            if (window.sessionManager.isLoggedIn()) {
+                alert('您已經登入，正在跳轉...');
+                window.location.href = 'dashboard.html';
+                return;
+            }
+
+            // 綁定表單提交事件
+            document.getElementById('loginForm').addEventListener('submit', handleLogin);
+
+            // 監聽登入事件
+            window.sessionManager.on('login', function(event) {
+                console.log('使用者已登入:', event.detail.user);
+            });
+
+            // 監聽登出事件
+            window.sessionManager.on('logout', function(event) {
+                console.log('使用者已登出');
+            });
+        });
+    </script>
+</body>
+</html>
+

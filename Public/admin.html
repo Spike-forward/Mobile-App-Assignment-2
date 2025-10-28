@@ -1,0 +1,692 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>程式教學平台 - 資料庫管理</title>
+    <link rel="stylesheet" href="index.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <!-- 導航欄 -->
+        <nav class="navbar">
+            <div class="nav-brand">
+                <i class="fas fa-database"></i>
+                <span>資料庫管理</span>
+            </div>
+            <div class="nav-menu">
+                <a href="#overview" class="nav-link active">
+                    <i class="fas fa-chart-pie"></i> 總覽
+                </a>
+                <a href="#users" class="nav-link">
+                    <i class="fas fa-users"></i> 使用者管理
+                </a>
+                <a href="#sessions" class="nav-link">
+                    <i class="fas fa-key"></i> 會話管理
+                </a>
+                <a href="#backup" class="nav-link">
+                    <i class="fas fa-download"></i> 備份還原
+                </a>
+            </div>
+            <div class="nav-user">
+                <a href="dashboard.html" class="btn btn-secondary">
+                    <i class="fas fa-arrow-left"></i> 返回儀表板
+                </a>
+            </div>
+        </nav>
+
+        <!-- 主要內容 -->
+        <main class="main-content">
+            <!-- 總覽頁面 -->
+            <div id="overview" class="admin-section">
+                <h1><i class="fas fa-chart-pie"></i> 資料庫總覽</h1>
+                
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <div class="stat-content">
+                            <h3>使用者總數</h3>
+                            <p id="totalUsers">-</p>
+                        </div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-user-check"></i>
+                        </div>
+                        <div class="stat-content">
+                            <h3>活躍使用者</h3>
+                            <p id="activeUsers">-</p>
+                        </div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-key"></i>
+                        </div>
+                        <div class="stat-content">
+                            <h3>活躍會話</h3>
+                            <p id="activeSessions">-</p>
+                        </div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-heart"></i>
+                        </div>
+                        <div class="stat-content">
+                            <h3>收藏總數</h3>
+                            <p id="totalFavorites">-</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="admin-actions">
+                    <button class="btn btn-primary" onclick="cleanupDatabase()">
+                        <i class="fas fa-broom"></i> 清理過期資料
+                    </button>
+                    <button class="btn btn-secondary" onclick="refreshStats()">
+                        <i class="fas fa-sync"></i> 重新整理
+                    </button>
+                </div>
+            </div>
+
+            <!-- 使用者管理頁面 -->
+            <div id="users" class="admin-section" style="display: none;">
+                <h1><i class="fas fa-users"></i> 使用者管理</h1>
+                
+                <div class="search-controls">
+                    <div class="search-box">
+                        <i class="fas fa-search"></i>
+                        <input type="text" id="userSearch" placeholder="搜尋使用者...">
+                    </div>
+                    <button class="btn btn-primary" onclick="loadUsers()">
+                        <i class="fas fa-sync"></i> 重新載入
+                    </button>
+                </div>
+
+                <div class="users-table-container">
+                    <table class="admin-table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>使用者名稱</th>
+                                <th>姓名</th>
+                                <th>學號</th>
+                                <th>電子郵件</th>
+                                <th>科系</th>
+                                <th>狀態</th>
+                                <th>註冊時間</th>
+                                <th>操作</th>
+                            </tr>
+                        </thead>
+                        <tbody id="usersTableBody">
+                            <!-- 使用者資料將由 JavaScript 動態生成 -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- 會話管理頁面 -->
+            <div id="sessions" class="admin-section" style="display: none;">
+                <h1><i class="fas fa-key"></i> 會話管理</h1>
+                
+                <div class="admin-actions">
+                    <button class="btn btn-warning" onclick="cleanupSessions()">
+                        <i class="fas fa-broom"></i> 清理過期會話
+                    </button>
+                    <button class="btn btn-primary" onclick="loadSessions()">
+                        <i class="fas fa-sync"></i> 重新載入
+                    </button>
+                </div>
+
+                <div class="sessions-table-container">
+                    <table class="admin-table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>使用者ID</th>
+                                <th>Token</th>
+                                <th>創建時間</th>
+                                <th>過期時間</th>
+                                <th>狀態</th>
+                                <th>操作</th>
+                            </tr>
+                        </thead>
+                        <tbody id="sessionsTableBody">
+                            <!-- 會話資料將由 JavaScript 動態生成 -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- 備份還原頁面 -->
+            <div id="backup" class="admin-section" style="display: none;">
+                <h1><i class="fas fa-download"></i> 備份與還原</h1>
+                
+                <div class="backup-actions">
+                    <div class="backup-card">
+                        <h3><i class="fas fa-download"></i> 備份資料庫</h3>
+                        <p>下載完整的資料庫備份檔案</p>
+                        <button class="btn btn-primary" onclick="backupDatabase()">
+                            <i class="fas fa-download"></i> 建立備份
+                        </button>
+                    </div>
+                    
+                    <div class="backup-card">
+                        <h3><i class="fas fa-upload"></i> 還原資料庫</h3>
+                        <p>從備份檔案還原資料庫</p>
+                        <input type="file" id="restoreFile" accept=".json" style="display: none;">
+                        <button class="btn btn-secondary" onclick="document.getElementById('restoreFile').click()">
+                            <i class="fas fa-upload"></i> 選擇檔案
+                        </button>
+                    </div>
+                </div>
+
+                <div class="backup-history">
+                    <h3>備份歷史</h3>
+                    <div id="backupHistory">
+                        <!-- 備份歷史將由 JavaScript 動態生成 -->
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- 載入模組 -->
+    <script src="../Private/database/secureDB.js"></script>
+    <script src="../Private/database/userRepository.js"></script>
+    <script src="../Private/database/sessionRepository.js"></script>
+    <script src="../Private/auth/api.js"></script>
+    <script src="../Private/auth/session.js"></script>
+    <script src="../Private/favorites/favoritesAPI.js"></script>
+    
+    <script>
+        let currentSection = 'overview';
+
+        // 切換頁面
+        function switchSection(sectionName) {
+            // 隱藏所有頁面
+            document.querySelectorAll('.admin-section').forEach(section => {
+                section.style.display = 'none';
+            });
+            
+            // 移除所有導航連結的活躍狀態
+            document.querySelectorAll('.nav-link').forEach(link => {
+                link.classList.remove('active');
+            });
+            
+            // 顯示選中的頁面
+            document.getElementById(sectionName).style.display = 'block';
+            document.querySelector(`[href="#${sectionName}"]`).classList.add('active');
+            
+            currentSection = sectionName;
+            
+            // 載入對應的資料
+            switch(sectionName) {
+                case 'overview':
+                    loadOverview();
+                    break;
+                case 'users':
+                    loadUsers();
+                    break;
+                case 'sessions':
+                    loadSessions();
+                    break;
+                case 'backup':
+                    loadBackupHistory();
+                    break;
+            }
+        }
+
+        // 載入總覽資料
+        async function loadOverview() {
+            try {
+                // 載入使用者統計
+                const userStats = await window.userRepository.getUserStats();
+                if (userStats.success) {
+                    document.getElementById('totalUsers').textContent = userStats.data.totalUsers;
+                    document.getElementById('activeUsers').textContent = userStats.data.activeUsers;
+                }
+
+                // 載入會話統計
+                const sessionStats = await window.sessionRepository.getSessionStats();
+                if (sessionStats.success) {
+                    document.getElementById('activeSessions').textContent = sessionStats.data.activeSessions;
+                }
+
+                // 載入收藏統計
+                const favoritesStats = window.favoritesAPI.getFavoritesStats(1); // 假設使用者ID為1
+                document.getElementById('totalFavorites').textContent = favoritesStats.totalFavorites;
+            } catch (error) {
+                console.error('載入總覽資料錯誤:', error);
+            }
+        }
+
+        // 載入使用者清單
+        async function loadUsers() {
+            try {
+                const result = await window.userRepository.getAllUsers();
+                
+                if (result.success) {
+                    const tbody = document.getElementById('usersTableBody');
+                    tbody.innerHTML = result.data.map(user => `
+                        <tr>
+                            <td>${user.id}</td>
+                            <td>${user.username}</td>
+                            <td>${user.fullName}</td>
+                            <td>${user.studentId}</td>
+                            <td>${user.email}</td>
+                            <td>${user.department || '-'}</td>
+                            <td>
+                                <span class="status-badge ${user.isActive ? 'active' : 'inactive'}">
+                                    ${user.isActive ? '活躍' : '停用'}
+                                </span>
+                            </td>
+                            <td>${new Date(user.createdAt).toLocaleDateString()}</td>
+                            <td>
+                                <button class="btn btn-sm btn-warning" onclick="toggleUserStatus(${user.id}, ${user.isActive})">
+                                    ${user.isActive ? '停用' : '啟用'}
+                                </button>
+                            </td>
+                        </tr>
+                    `).join('');
+                }
+            } catch (error) {
+                console.error('載入使用者清單錯誤:', error);
+            }
+        }
+
+        // 載入會話清單
+        async function loadSessions() {
+            try {
+                const result = await window.secureDB.select('sessions');
+                
+                if (result.success) {
+                    const tbody = document.getElementById('sessionsTableBody');
+                    tbody.innerHTML = result.data.map(session => `
+                        <tr>
+                            <td>${session.id}</td>
+                            <td>${session.userId}</td>
+                            <td>${session.token.substring(0, 20)}...</td>
+                            <td>${new Date(session.createdAt).toLocaleString()}</td>
+                            <td>${new Date(session.expiresAt).toLocaleString()}</td>
+                            <td>
+                                <span class="status-badge ${session.isActive ? 'active' : 'inactive'}">
+                                    ${session.isActive ? '活躍' : '停用'}
+                                </span>
+                            </td>
+                            <td>
+                                <button class="btn btn-sm btn-danger" onclick="deactivateSession(${session.id})">
+                                    停用
+                                </button>
+                            </td>
+                        </tr>
+                    `).join('');
+                }
+            } catch (error) {
+                console.error('載入會話清單錯誤:', error);
+            }
+        }
+
+        // 切換使用者狀態
+        async function toggleUserStatus(userId, currentStatus) {
+            try {
+                let result;
+                if (currentStatus) {
+                    result = await window.userRepository.deactivateUser(userId);
+                } else {
+                    result = await window.userRepository.activateUser(userId);
+                }
+                
+                if (result.success) {
+                    alert(result.message);
+                    loadUsers();
+                } else {
+                    alert('操作失敗: ' + result.error);
+                }
+            } catch (error) {
+                console.error('切換使用者狀態錯誤:', error);
+                alert('操作失敗');
+            }
+        }
+
+        // 停用會話
+        async function deactivateSession(sessionId) {
+            try {
+                const result = await window.sessionRepository.deactivateSession(sessionId);
+                
+                if (result.success) {
+                    alert(result.message);
+                    loadSessions();
+                } else {
+                    alert('操作失敗: ' + result.error);
+                }
+            } catch (error) {
+                console.error('停用會話錯誤:', error);
+                alert('操作失敗');
+            }
+        }
+
+        // 清理資料庫
+        async function cleanupDatabase() {
+            try {
+                const result = await window.secureDB.cleanup();
+                
+                if (result.success) {
+                    alert('資料庫清理完成');
+                    loadOverview();
+                } else {
+                    alert('清理失敗: ' + result.error);
+                }
+            } catch (error) {
+                console.error('清理資料庫錯誤:', error);
+                alert('清理失敗');
+            }
+        }
+
+        // 清理會話
+        async function cleanupSessions() {
+            try {
+                const result = await window.sessionRepository.cleanupExpiredSessions();
+                
+                if (result.success) {
+                    alert(result.message);
+                    loadSessions();
+                } else {
+                    alert('清理失敗: ' + result.error);
+                }
+            } catch (error) {
+                console.error('清理會話錯誤:', error);
+                alert('清理失敗');
+            }
+        }
+
+        // 備份資料庫
+        async function backupDatabase() {
+            try {
+                const result = await window.secureDB.backup();
+                
+                if (result.success) {
+                    // 下載備份檔案
+                    const blob = new Blob([JSON.stringify(result.data, null, 2)], { type: 'application/json' });
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = `backup_${new Date().toISOString().split('T')[0]}.json`;
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a);
+                    URL.revokeObjectURL(url);
+                    
+                    alert('備份檔案已下載');
+                } else {
+                    alert('備份失敗: ' + result.error);
+                }
+            } catch (error) {
+                console.error('備份資料庫錯誤:', error);
+                alert('備份失敗');
+            }
+        }
+
+        // 還原資料庫
+        document.getElementById('restoreFile').addEventListener('change', async function(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            try {
+                const text = await file.text();
+                const backupData = JSON.parse(text);
+                
+                const result = await window.secureDB.restore(backupData);
+                
+                if (result.success) {
+                    alert('資料庫還原成功');
+                    loadOverview();
+                } else {
+                    alert('還原失敗: ' + result.error);
+                }
+            } catch (error) {
+                console.error('還原資料庫錯誤:', error);
+                alert('還原失敗: 無效的備份檔案');
+            }
+        });
+
+        // 重新整理統計
+        function refreshStats() {
+            loadOverview();
+        }
+
+        // 載入備份歷史
+        function loadBackupHistory() {
+            // 這裡可以實現備份歷史功能
+            document.getElementById('backupHistory').innerHTML = '<p>備份歷史功能開發中...</p>';
+        }
+
+        // 頁面載入時初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            // 檢查認證狀態
+            if (!window.sessionManager.isLoggedIn()) {
+                alert('請先登入');
+                window.location.href = 'login.html';
+                return;
+            }
+
+            // 綁定導航事件
+            document.querySelectorAll('.nav-link').forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const sectionName = this.getAttribute('href').substring(1);
+                    switchSection(sectionName);
+                });
+            });
+
+            // 載入初始資料
+            loadOverview();
+        });
+    </script>
+
+    <style>
+        /* 管理頁面樣式 */
+        .admin-section {
+            margin-bottom: 30px;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .stat-icon {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.2rem;
+        }
+
+        .stat-content h3 {
+            margin: 0 0 5px 0;
+            color: #333;
+            font-size: 0.9rem;
+        }
+
+        .stat-content p {
+            margin: 0;
+            color: #666;
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+
+        .admin-actions {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .search-controls {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+            align-items: center;
+        }
+
+        .search-box {
+            position: relative;
+            flex: 1;
+            max-width: 300px;
+        }
+
+        .search-box i {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #666;
+        }
+
+        .search-box input {
+            width: 100%;
+            padding: 10px 15px 10px 40px;
+            border: 2px solid #e1e5e9;
+            border-radius: 8px;
+        }
+
+        .admin-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .admin-table th,
+        .admin-table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #e1e5e9;
+        }
+
+        .admin-table th {
+            background: #f8f9fa;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .admin-table tbody tr:hover {
+            background: #f8f9fa;
+        }
+
+        .status-badge {
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .status-badge.active {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .status-badge.inactive {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .btn-sm {
+            padding: 6px 12px;
+            font-size: 0.8rem;
+        }
+
+        .backup-actions {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .backup-card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+            text-align: center;
+        }
+
+        .backup-card h3 {
+            margin: 0 0 10px 0;
+            color: #333;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .backup-card p {
+            margin: 0 0 20px 0;
+            color: #666;
+        }
+
+        .backup-history {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+        }
+
+        .backup-history h3 {
+            margin: 0 0 15px 0;
+            color: #333;
+        }
+
+        .table-container {
+            overflow-x: auto;
+        }
+
+        @media (max-width: 768px) {
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .search-controls {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .search-box {
+                max-width: none;
+            }
+
+            .admin-actions {
+                flex-direction: column;
+            }
+
+            .backup-actions {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</body>
+</html>
+

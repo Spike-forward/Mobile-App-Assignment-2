@@ -1,0 +1,52 @@
+{
+  "name": "mobile-app-assignment-2",
+  "version": "1.0.0",
+  "description": "程式教學平台 - 學生註冊與課程管理系統",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "build": "node build.cjs build",
+    "watch": "node build.cjs watch",
+    "clean": "node build.cjs clean",
+    "dev": "npm run watch & live-server dist --port=3000",
+    "start": "live-server dist --port=3000",
+    "server": "live-server dist --port=3000 --host=localhost",
+    "server:express": "node server.js",
+    "dev:express": "node server.js",
+    "type-check": "tsc --noEmit",
+    "lint": "eslint Private/**/*.ts Public/**/*.ts",
+    "format": "prettier --write Private/**/*.ts Public/**/*.ts",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Lee Wai Kei Patrick 李偉基 (Colin)",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/node": "^20.10.0",
+    "@typescript-eslint/eslint-plugin": "^6.14.0",
+    "@typescript-eslint/parser": "^6.14.0",
+    "esbuild": "^0.25.11",
+    "eslint": "^8.55.0",
+    "live-server": "^1.2.0",
+    "prettier": "^3.1.1",
+    "typescript": "^5.9.3"
+  },
+  "dependencies": {
+    "@ionic/core": "^7.5.0",
+    "express": "^4.18.2",
+    "cors": "^2.8.5",
+    "dotenv": "^16.3.1",
+    "helmet": "^7.1.0",
+    "morgan": "^1.10.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Spike-forward/Mobile-App-Assignment-2.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Spike-forward/Mobile-App-Assignment-2/issues"
+  },
+  "homepage": "https://github.com/Spike-forward/Mobile-App-Assignment-2#readme"
+}

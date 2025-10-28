@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>程式教學平台 - 個人資料</title>
+    <link rel="stylesheet" href="index.css">
+    <link rel="stylesheet" href="responsive.css">
+    <link rel="stylesheet" href="visual.css">
+    <link rel="stylesheet" href="animations.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <!-- 導航欄 -->
+        <nav class="navbar">
+            <div class="nav-brand">
+                <i class="fas fa-code"></i>
+                <span>程式教學平台</span>
+            </div>
+            <div class="nav-menu">
+                <a href="dashboard.html" class="nav-link">
+                    <i class="fas fa-tachometer-alt"></i> 儀表板
+                </a>
+                <a href="favorites.html" class="nav-link">
+                    <i class="fas fa-heart"></i> 我的收藏
+                </a>
+                <a href="courses.html" class="nav-link">
+                    <i class="fas fa-book"></i> 課程
+                </a>
+                <a href="#profile" class="nav-link active">
+                    <i class="fas fa-user"></i> 個人資料
+                </a>
+            </div>
+            <div class="nav-user">
+                <div class="user-info">
+                    <i class="fas fa-user-circle"></i>
+                    <span id="userName">載入中...</span>
+                </div>
+                <button class="btn btn-outline" onclick="logout()">
+                    <i class="fas fa-sign-out-alt"></i> 登出
+                </button>
+            </div>
+        </nav>
+
+        <!-- 主要內容 -->
+        <main class="main-content">
+            <!-- 個人資料標題 -->
+            <div class="welcome-section">
+                <h1><i class="fas fa-user-circle"></i> 個人資料</h1>
+                <p>管理您的個人資訊和學習偏好</p>
+            </div>
+
+            <!-- 個人資料卡片 -->
+            <div class="profile-card">
+                <div class="profile-header">
+                    <div class="profile-avatar">
+                        <i class="fas fa-user-circle"></i>
+                    </div>
+                    <div class="profile-info">
+                        <h2 id="profileName">載入中...</h2>
+                        <p id="profileEmail">載入中...</p>
+                        <div class="profile-stats">
+                            <div class="stat-item">
+                                <span class="stat-number" id="totalCourses">0</span>
+                                <span class="stat-label">已選課程</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-number" id="favoriteCount">0</span>
+                                <span class="stat-label">收藏課程</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-number" id="learningDays">0</span>
+                                <span class="stat-label">學習天數</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 個人資訊編輯區域 -->
+            <div class="profile-sections">
+                <!-- 基本資訊 -->
+                <div class="profile-section">
+                    <div class="section-header">
+                        <h3><i class="fas fa-user"></i> 基本資訊</h3>
+                        <button class="btn btn-outline" onclick="toggleEdit('basicInfo')">
+                            <i class="fas fa-edit"></i> 編輯
+                        </button>
+                    </div>
+                    <div class="section-content">
+                        <div class="info-grid">
+                            <div class="info-item">
+                                <label>姓名</label>
+                                <input type="text" id="fullName" readonly>
+                            </div>
+                            <div class="info-item">
+                                <label>使用者名稱</label>
+                                <input type="text" id="username" readonly>
+                            </div>
+                            <div class="info-item">
+                                <label>電子郵件</label>
+                                <input type="email" id="email" readonly>
+                            </div>
+                            <div class="info-item">
+                                <label>電話號碼</label>
+                                <input type="tel" id="phone" readonly>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 學習偏好 -->
+                <div class="profile-section">
+                    <div class="section-header">
+                        <h3><i class="fas fa-graduation-cap"></i> 學習偏好</h3>
+                        <button class="btn btn-outline" onclick="toggleEdit('learningPrefs')">
+                            <i class="fas fa-edit"></i> 編輯
+                        </button>
+                    </div>
+                    <div class="section-content">
+                        <div class="info-grid">
+                            <div class="info-item">
+                                <label>程式經驗程度</label>
+                                <select id="programmingLevel" disabled>
+                                    <option value="beginner">初學者</option>
+                                    <option value="intermediate">中級</option>
+                                    <option value="advanced">進階</option>
+                                </select>
+                            </div>
+                            <div class="info-item">
+                                <label>學習目標</label>
+                                <textarea id="learningGoals" rows="3" readonly></textarea>
+                            </div>
+                        </div>
+                        <div class="info-item full-width">
+                            <label>感興趣的課程</label>
+                            <div class="selected-courses" id="selectedCourses">
+                                <!-- 選中的課程將在這裡顯示 -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 帳戶設定 -->
+                <div class="profile-section">
+                    <div class="section-header">
+                        <h3><i class="fas fa-cog"></i> 帳戶設定</h3>
+                    </div>
+                    <div class="section-content">
+                        <div class="settings-list">
+                            <div class="setting-item">
+                                <div class="setting-info">
+                                    <h4>變更密碼</h4>
+                                    <p>定期更新您的密碼以保護帳戶安全</p>
+                                </div>
+                                <button class="btn btn-outline" onclick="changePassword()">
+                                    <i class="fas fa-key"></i> 變更
+                                </button>
+                            </div>
+                            <div class="setting-item">
+                                <div class="setting-info">
+                                    <h4>通知設定</h4>
+                                    <p>管理您接收的通知類型</p>
+                                </div>
+                                <button class="btn btn-outline" onclick="notificationSettings()">
+                                    <i class="fas fa-bell"></i> 設定
+                                </button>
+                            </div>
+                            <div class="setting-item">
+                                <div class="setting-info">
+                                    <h4>資料匯出</h4>
+                                    <p>下載您的個人資料和學習記錄</p>
+                                </div>
+                                <button class="btn btn-outline" onclick="exportData()">
+                                    <i class="fas fa-download"></i> 匯出
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 操作按鈕 -->
+            <div class="profile-actions">
+                <button class="btn btn-primary" onclick="saveProfile()">
+                    <i class="fas fa-save"></i> 儲存變更
+                </button>
+                <button class="btn btn-secondary" onclick="resetProfile()">
+                    <i class="fas fa-undo"></i> 重設
+                </button>
+            </div>
+        </main>
+    </div>
+
+    <!-- 載入必要的腳本 -->
+    <script src="../Private/database/secureDB.js"></script>
+    <script src="../Private/database/userRepository.js"></script>
+    <script src="../Private/database/sessionRepository.js"></script>
+    <script src="../Private/auth/api.js"></script>
+    <script src="../Private/auth/session.js"></script>
+    <script src="../Private/favorites/favoritesAPI.js"></script>
+    <script type="module" src="../Private/data/courseData.ts"></script>
+    <script src="animations.js"></script>
+    
+    <script>
+        // 全域變數
+        let currentUser = null;
+        let courses = [];
+        let isEditing = {
+            basicInfo: false,
+            learningPrefs: false
+        };
+
+        // DOM 元素
+        const userName = document.getElementById('userName');
+        const profileName = document.getElementById('profileName');
+        const profileEmail = document.getElementById('profileEmail');
+        const totalCourses = document.getElementById('totalCourses');
+        const favoriteCount = document.getElementById('favoriteCount');
+        const learningDays = document.getElementById('learningDays');
+
+        // 初始化
+        document.addEventListener('DOMContentLoaded', async function() {
+            // 檢查登入狀態
+            if (!window.sessionManager.isLoggedIn()) {
+                alert('請先登入以查看個人資料');
+                window.location.href = 'login.html';
+                return;
+            }
+
+            // 載入課程資料
+            await loadCourseData();
+            
+            // 載入使用者資料
+            loadUserProfile();
+            
+            // 載入統計資料
+            loadUserStats();
+        });
+
+        // 載入課程資料
+        async function loadCourseData() {
+            try {
+                const courseModule = await import('../Private/data/courseData.ts');
+                courses = courseModule.courses;
+                console.log('課程資料載入成功:', courses.length, '個課程');
+            } catch (error) {
+                console.warn('ES6 module import failed, using fallback:', error);
+                if (window.CourseData && window.CourseData.courses) {
+                    courses = window.CourseData.courses;
+                    console.log('使用全域課程資料:', courses.length, '個課程');
+                }
+            }
+        }
+
+        // 載入使用者資料
+        function loadUserProfile() {
+            currentUser = window.sessionManager.getCurrentUser();
+            if (!currentUser) {
+                console.error('無法載入使用者資料');
+                return;
+            }
+
+            // 更新導航欄
+            userName.textContent = currentUser.fullName || currentUser.username;
+            profileName.textContent = currentUser.fullName || currentUser.username;
+            profileEmail.textContent = currentUser.email || '未設定';
+
+            // 更新基本資訊
+            document.getElementById('fullName').value = currentUser.fullName || '';
+            document.getElementById('username').value = currentUser.username || '';
+            document.getElementById('email').value = currentUser.email || '';
+            document.getElementById('phone').value = currentUser.phone || '';
+
+            // 更新學習偏好
+            document.getElementById('programmingLevel').value = currentUser.programmingLevel || 'beginner';
+            document.getElementById('learningGoals').value = currentUser.learningGoals || '';
+
+            // 更新感興趣的課程
+            updateSelectedCourses();
+        }
+
+        // 更新選中的課程顯示
+        function updateSelectedCourses() {
+            const selectedCoursesDiv = document.getElementById('selectedCourses');
+            const interestedCourses = currentUser.interestedCourses || [];
+
+            if (interestedCourses.length === 0) {
+                selectedCoursesDiv.innerHTML = '<p class="no-courses">尚未選擇任何課程</p>';
+                return;
+            }
+
+            selectedCoursesDiv.innerHTML = interestedCourses.map(courseTitle => {
+                const course = courses.find(c => c.title === courseTitle);
+                if (course) {
+                    return `
+                        <div class="course-tag">
+                            <span class="course-title">${course.title}</span>
+                            <span class="course-level level-${course.level === '進階' ? 'advanced' : course.level === '中級' ? 'intermediate' : 'beginner'}">${course.level}</span>
+                        </div>
+                    `;
+                }
+                return `
+                    <div class="course-tag">
+                        <span class="course-title">${courseTitle}</span>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // 載入使用者統計
+        async function loadUserStats() {
+            try {
+                // 載入收藏數量
+                const favorites = await window.favoritesAPI.getFavorites();
+                favoriteCount.textContent = favorites.length;
+
+                // 計算已選課程數量
+                const interestedCourses = currentUser.interestedCourses || [];
+                totalCourses.textContent = interestedCourses.length;
+
+                // 計算學習天數（模擬）
+                const registrationDate = new Date(currentUser.createdAt || Date.now());
+                const daysSinceRegistration = Math.floor((Date.now() - registrationDate.getTime()) / (1000 * 60 * 60 * 24));
+                learningDays.textContent = Math.max(1, daysSinceRegistration);
+
+            } catch (error) {
+                console.error('載入統計資料失敗:', error);
+            }
+        }
+
+        // 切換編輯模式
+        function toggleEdit(section) {
+            isEditing[section] = !isEditing[section];
+            
+            if (section === 'basicInfo') {
+                const inputs = ['fullName', 'username', 'email', 'phone'];
+                inputs.forEach(id => {
+                    const input = document.getElementById(id);
+                    input.readOnly = !isEditing[section];
+                    input.style.backgroundColor = isEditing[section] ? '#ffffff' : '#f8f9fa';
+                });
+            } else if (section === 'learningPrefs') {
+                const programmingLevel = document.getElementById('programmingLevel');
+                const learningGoals = document.getElementById('learningGoals');
+                
+                programmingLevel.disabled = !isEditing[section];
+                learningGoals.readOnly = !isEditing[section];
+                
+                programmingLevel.style.backgroundColor = isEditing[section] ? '#ffffff' : '#f8f9fa';
+                learningGoals.style.backgroundColor = isEditing[section] ? '#ffffff' : '#f8f9fa';
+            }
+        }
+
+        // 儲存個人資料
+        async function saveProfile() {
+            try {
+                const updatedUser = {
+                    ...currentUser,
+                    fullName: document.getElementById('fullName').value,
+                    username: document.getElementById('username').value,
+                    email: document.getElementById('email').value,
+                    phone: document.getElementById('phone').value,
+                    programmingLevel: document.getElementById('programmingLevel').value,
+                    learningGoals: document.getElementById('learningGoals').value
+                };
+
+                // 更新使用者資料
+                const result = await window.userRepo.updateUser(currentUser.id, updatedUser);
+                
+                if (result.success) {
+                    // 更新 session
+                    window.sessionManager.updateUser(updatedUser);
+                    currentUser = updatedUser;
+                    
+                    // 更新顯示
+                    loadUserProfile();
+                    
+                    // 關閉編輯模式
+                    Object.keys(isEditing).forEach(key => {
+                        if (isEditing[key]) {
+                            toggleEdit(key);
+                        }
+                    });
+                    
+                    showNotification('個人資料已成功更新！', 'success');
+                } else {
+                    showNotification('更新失敗：' + result.error, 'error');
+                }
+            } catch (error) {
+                console.error('儲存個人資料失敗:', error);
+                showNotification('儲存失敗，請稍後再試', 'error');
+            }
+        }
+
+        // 重設個人資料
+        function resetProfile() {
+            if (confirm('確定要重設所有變更嗎？')) {
+                loadUserProfile();
+                Object.keys(isEditing).forEach(key => {
+                    if (isEditing[key]) {
+                        toggleEdit(key);
+                    }
+                });
+                showNotification('已重設所有變更', 'info');
+            }
+        }
+
+        // 變更密碼
+        function changePassword() {
+            const newPassword = prompt('請輸入新密碼：');
+            if (newPassword && newPassword.length >= 6) {
+                // 這裡應該實現密碼變更邏輯
+                showNotification('密碼變更功能開發中...', 'info');
+            } else if (newPassword) {
+                showNotification('密碼長度至少需要6個字符', 'error');
+            }
+        }
+
+        // 通知設定
+        function notificationSettings() {
+            showNotification('通知設定功能開發中...', 'info');
+        }
+
+        // 匯出資料
+        function exportData() {
+            const userData = {
+                profile: currentUser,
+                stats: {
+                    totalCourses: totalCourses.textContent,
+                    favoriteCount: favoriteCount.textContent,
+                    learningDays: learningDays.textContent
+                },
+                exportDate: new Date().toISOString()
+            };
+            
+            const dataStr = JSON.stringify(userData, null, 2);
+            const dataBlob = new Blob([dataStr], {type: 'application/json'});
+            const url = URL.createObjectURL(dataBlob);
+            
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `user-data-${currentUser.username}-${new Date().toISOString().split('T')[0]}.json`;
+            link.click();
+            
+            URL.revokeObjectURL(url);
+            showNotification('資料匯出完成！', 'success');
+        }
+
+        // 登出
+        function logout() {
+            if (confirm('確定要登出嗎？')) {
+                window.sessionManager.logout();
+                window.location.href = 'login.html';
+            }
+        }
+
+        // 顯示通知
+        function showNotification(message, type = 'info') {
+            if (window.createNotification) {
+                window.createNotification(message, type);
+            } else {
+                alert(message);
+            }
+        }
+    </script>
+</body>
+</html>

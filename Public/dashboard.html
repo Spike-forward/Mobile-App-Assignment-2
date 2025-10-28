@@ -1,0 +1,593 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>程式教學平台 - 儀表板</title>
+    <link rel="stylesheet" href="index.css">
+    <link rel="stylesheet" href="responsive.css">
+    <link rel="stylesheet" href="visual.css">
+    <link rel="stylesheet" href="animations.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <!-- 導航欄 -->
+        <nav class="navbar">
+            <div class="nav-brand">
+                <i class="fas fa-code"></i>
+                <span>程式教學平台</span>
+            </div>
+            <div class="nav-menu">
+                <a href="#dashboard" class="nav-link active">
+                    <i class="fas fa-tachometer-alt"></i> 儀表板
+                </a>
+                <a href="favorites.html" class="nav-link">
+                    <i class="fas fa-heart"></i> 我的收藏
+                </a>
+                <a href="courses.html" class="nav-link">
+                    <i class="fas fa-book"></i> 課程
+                </a>
+                <a href="profile.html" class="nav-link">
+                    <i class="fas fa-user"></i> 個人資料
+                </a>
+            </div>
+            <div class="nav-user">
+                <div class="user-info">
+                    <i class="fas fa-user-circle"></i>
+                    <span id="userName">載入中...</span>
+                </div>
+                <button class="btn btn-secondary" onclick="logout()">
+                    <i class="fas fa-sign-out-alt"></i> 登出
+                </button>
+            </div>
+        </nav>
+
+        <!-- 主要內容 -->
+        <main class="main-content">
+            <div class="welcome-section">
+                <h1>歡迎回來！</h1>
+                <p id="welcomeMessage">載入中...</p>
+            </div>
+
+            <!-- 使用者資訊卡片 -->
+            <div class="info-cards">
+                <div class="info-card">
+                    <div class="card-icon">
+                        <i class="fas fa-user-graduate"></i>
+                    </div>
+                    <div class="card-content">
+                        <h3>學號</h3>
+                        <p id="studentId">-</p>
+                    </div>
+                </div>
+
+                <div class="info-card">
+                    <div class="card-icon">
+                        <i class="fas fa-envelope"></i>
+                    </div>
+                    <div class="card-content">
+                        <h3>電子郵件</h3>
+                        <p id="userEmail">-</p>
+                    </div>
+                </div>
+
+                <div class="info-card">
+                    <div class="card-icon">
+                        <i class="fas fa-graduation-cap"></i>
+                    </div>
+                    <div class="card-content">
+                        <h3>科系</h3>
+                        <p id="userDepartment">-</p>
+                    </div>
+                </div>
+
+                <div class="info-card">
+                    <div class="card-icon">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                    <div class="card-content">
+                        <h3>程式經驗</h3>
+                        <p id="userLevel">-</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 有興趣的課程 -->
+            <div class="courses-section">
+                <div class="section-header">
+                    <h2>您有興趣的課程</h2>
+                    <div class="section-actions">
+                        <button class="btn btn-outline" onclick="syncToFavorites()">
+                            <i class="fas fa-heart"></i> 同步到收藏
+                        </button>
+                    </div>
+                </div>
+                <div class="courses-grid" id="interestedCourses">
+                    <!-- 課程將由 JavaScript 動態生成 -->
+                </div>
+            </div>
+
+            <!-- 我的收藏 -->
+            <div class="favorites-section">
+                <div class="section-header">
+                    <h2><i class="fas fa-heart"></i> 我的收藏</h2>
+                    <div class="section-actions">
+                        <a href="favorites.html" class="btn btn-primary">
+                            <i class="fas fa-eye"></i> 查看全部
+                        </a>
+                    </div>
+                </div>
+                <div class="favorites-preview" id="favoritesPreview">
+                    <!-- 收藏預覽將由 JavaScript 動態生成 -->
+                </div>
+            </div>
+
+            <!-- 學習目標 -->
+            <div class="goals-section">
+                <h2>學習目標</h2>
+                <div class="goals-content">
+                    <p id="learningGoals">-</p>
+                </div>
+            </div>
+
+            <!-- 課程預覽區域 -->
+            <div class="courses-preview-section">
+                <div class="section-header">
+                    <h2><i class="fas fa-book"></i> 熱門課程</h2>
+                    <div class="section-actions">
+                        <a href="courses.html" class="btn btn-primary">
+                            <i class="fas fa-eye"></i> 查看全部課程
+                        </a>
+                    </div>
+                </div>
+                
+                <div class="courses-preview-grid" id="coursesPreview">
+                    <!-- 課程預覽將由 JavaScript 動態生成 -->
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- 載入認證模組 -->
+    <script src="../Private/database/secureDB.js"></script>
+    <script src="../Private/database/userRepository.js"></script>
+    <script src="../Private/database/sessionRepository.js"></script>
+    <script src="../Private/auth/api.js"></script>
+    <script src="../Private/auth/session.js"></script>
+    <script src="../Private/favorites/favoritesAPI.js"></script>
+    <script type="module" src="../Private/data/courseData.ts"></script>
+    
+    <script>
+        // 載入使用者資料
+        function loadUserData() {
+            const user = window.sessionManager.getCurrentUser();
+            if (!user) {
+                alert('請先登入');
+                window.location.href = 'login.html';
+                return;
+            }
+
+            // 更新使用者資訊
+            document.getElementById('userName').textContent = user.fullName || user.username;
+            document.getElementById('welcomeMessage').textContent = `歡迎回來，${user.fullName || user.username}！`;
+            document.getElementById('studentId').textContent = user.studentId || '-';
+            document.getElementById('userEmail').textContent = user.email || '-';
+            document.getElementById('userDepartment').textContent = user.department || '-';
+            
+            // 程式經驗等級
+            const levelMap = {
+                'beginner': '初學者',
+                'basic': '基礎',
+                'intermediate': '中級',
+                'advanced': '高級'
+            };
+            document.getElementById('userLevel').textContent = levelMap[user.programmingLevel] || '-';
+
+            // 學習目標
+            document.getElementById('learningGoals').textContent = user.learningGoals || '尚未設定學習目標';
+
+            // 載入有興趣的課程
+            loadInterestedCourses(user.interestedCourses || []);
+            
+            // 載入收藏預覽
+            loadFavoritesPreview();
+        }
+
+        // 載入有興趣的課程
+        function loadInterestedCourses(courseIds) {
+            const coursesContainer = document.getElementById('interestedCourses');
+            
+            if (courseIds.length === 0) {
+                coursesContainer.innerHTML = '<p class="no-courses">尚未選擇有興趣的課程</p>';
+                return;
+            }
+
+            const interestedCourses = coursesData.filter(course => 
+                courseIds.includes(course.id.toString())
+            );
+
+            coursesContainer.innerHTML = interestedCourses.map(course => `
+                <div class="course-card">
+                    <div class="course-icon">
+                        <i class="fas fa-code"></i>
+                    </div>
+                    <div class="course-info">
+                        <h3>${course.title}</h3>
+                        <span class="course-level level-${course.level.toLowerCase()}">${course.level}</span>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // 載入收藏預覽
+        function loadFavoritesPreview() {
+            const user = window.sessionManager.getCurrentUser();
+            if (!user) return;
+
+            const favorites = window.favoritesAPI.getFavoriteCourses(user.id, coursesData);
+            const previewContainer = document.getElementById('favoritesPreview');
+
+            if (favorites.length === 0) {
+                previewContainer.innerHTML = `
+                    <div class="empty-favorites">
+                        <i class="fas fa-heart-broken"></i>
+                        <p>還沒有收藏任何課程</p>
+                        <small>開始探索課程並加入收藏吧！</small>
+                    </div>
+                `;
+                return;
+            }
+
+            // 顯示所有收藏課程名稱列表（帶圖片）
+            previewContainer.innerHTML = `
+                <div class="favorites-list">
+                    ${favorites.map(course => `
+                        <div class="favorite-item">
+                            <div class="course-image-wrapper">
+                                <img src="${course.image}" alt="${course.title}" class="course-image" onerror="this.src='https://via.placeholder.com/300x200?text=Course'">
+                            </div>
+                            <div class="course-info-wrapper">
+                                <span class="course-name">${course.title}</span>
+                                <span class="course-level-badge level-${course.level}">${course.level}</span>
+                            </div>
+                        </div>
+                    `).join('')}
+                </div>
+                <div class="favorites-footer">
+                    <p class="favorites-count">
+                        <i class="fas fa-heart"></i> 共 ${favorites.length} 個收藏課程
+                    </p>
+                </div>
+            `;
+        }
+
+        // 切換收藏狀態
+        function toggleFavorite(courseId) {
+            const user = window.sessionManager.getCurrentUser();
+            if (!user) return;
+
+            const result = window.favoritesAPI.toggleFavorite(user.id, courseId);
+            
+            if (result.success) {
+                // 重新載入收藏預覽
+                loadFavoritesPreview();
+                
+                // 顯示通知
+                showNotification(result.message, 'success');
+            } else {
+                showNotification(result.message, 'error');
+            }
+        }
+
+        // 同步到收藏
+        function syncToFavorites() {
+            const user = window.sessionManager.getCurrentUser();
+            if (!user) return;
+
+            const interestedCourses = user.interestedCourses || [];
+            if (interestedCourses.length === 0) {
+                showNotification('您還沒有選擇有興趣的課程', 'info');
+                return;
+            }
+
+            const result = window.favoritesAPI.syncFromRegistration(user.id, interestedCourses);
+            
+            if (result.success) {
+                loadFavoritesPreview();
+                showNotification(result.message, 'success');
+            } else {
+                showNotification(result.message, 'error');
+            }
+        }
+
+        // 顯示通知
+        function showNotification(message, type = 'info') {
+            const notification = document.createElement('div');
+            notification.className = `notification notification-${type}`;
+            notification.innerHTML = `
+                <i class="fas fa-${type === 'success' ? 'check-circle' : type === 'error' ? 'exclamation-circle' : 'info-circle'}"></i>
+                <span>${message}</span>
+            `;
+            
+            document.body.appendChild(notification);
+            
+            // 顯示動畫
+            setTimeout(() => notification.classList.add('show'), 100);
+            
+            // 自動移除
+            setTimeout(() => {
+                notification.classList.remove('show');
+                setTimeout(() => notification.remove(), 300);
+            }, 3000);
+        }
+
+        // 登出功能
+        async function logout() {
+            if (confirm('確定要登出嗎？')) {
+                try {
+                    const result = await window.sessionManager.logout();
+                    if (result.success) {
+                        alert('已成功登出');
+                        window.location.href = 'login.html';
+                    } else {
+                        alert('登出失敗，請稍後再試');
+                    }
+                } catch (error) {
+                    console.error('登出錯誤:', error);
+                    alert('登出時發生錯誤');
+                }
+            }
+        }
+
+        // 載入課程預覽
+        function loadCoursesPreview() {
+            const previewContainer = document.getElementById('coursesPreview');
+            
+            // 等待課程資料載入
+            setTimeout(() => {
+                if (window.CourseData && window.CourseData.courses) {
+                    const courses = window.CourseData.courses;
+                    // 顯示前6個課程作為預覽
+                    const previewCourses = courses.slice(0, 6);
+                    
+                    previewContainer.innerHTML = previewCourses.map(course => `
+                        <div class="course-preview-card">
+                            <div class="card-header">
+                                <div class="course-icon">
+                                    <i class="fas fa-code"></i>
+                                </div>
+                                <div class="course-level level-${course.level === '進階' ? 'advanced' : course.level === '中級' ? 'intermediate' : 'beginner'}">
+                                    ${course.level}
+                                </div>
+                            </div>
+                            <div class="card-content">
+                                <h4>${course.title}</h4>
+                                <p class="course-language">${course.language}</p>
+                                <p class="course-category">${course.category}</p>
+                                <div class="course-tags">
+                                    ${course.tags.slice(0, 2).map(tag => `<span class="tag">${tag}</span>`).join('')}
+                                </div>
+                            </div>
+                            <div class="card-actions">
+                                <button class="btn btn-outline" onclick="addToFavorites('${course.title}')">
+                                    <i class="fas fa-heart"></i> 收藏
+                                </button>
+                            </div>
+                        </div>
+                    `).join('');
+                } else {
+                    previewContainer.innerHTML = '<p class="no-courses">課程資料載入中...</p>';
+                }
+            }, 100);
+        }
+
+        // 加入收藏（從課程預覽）
+        function addToFavorites(courseTitle) {
+            if (!window.sessionManager.isLoggedIn()) {
+                alert('請先登入以使用收藏功能');
+                return;
+            }
+
+            const user = window.sessionManager.getCurrentUser();
+            const course = window.CourseData.courses.find(c => c.title === courseTitle);
+            
+            if (!course) {
+                alert('找不到該課程');
+                return;
+            }
+
+            const result = window.favoritesAPI.toggleFavorite(user.id, courseTitle);
+            
+            if (result.success) {
+                showNotification('課程已加入收藏！', 'success');
+                loadFavoritesPreview(); // 重新載入收藏預覽
+            } else {
+                showNotification('加入收藏失敗：' + result.message, 'error');
+            }
+        }
+
+        // 頁面載入時初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            // 檢查認證狀態
+            window.sessionManager.checkAuthStatus().then(isAuthenticated => {
+                if (isAuthenticated) {
+                    loadUserData();
+                    loadCoursesPreview(); // 載入課程預覽
+                } else {
+                    alert('請先登入');
+                    window.location.href = 'login.html';
+                }
+            });
+
+            // 監聽登出事件
+            window.sessionManager.on('logout', function() {
+                window.location.href = 'login.html';
+            });
+        });
+    </script>
+
+    <style>
+        /* 收藏列表樣式 */
+        .favorites-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .favorite-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 12px 15px;
+            background: white;
+            border: 2px solid #f0f0f0;
+            border-radius: 12px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            overflow: hidden;
+        }
+
+        .favorite-item:hover {
+            border-color: #667eea;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.15);
+            transform: translateX(5px);
+        }
+
+        .course-image-wrapper {
+            width: 60px;
+            height: 60px;
+            border-radius: 8px;
+            overflow: hidden;
+            flex-shrink: 0;
+            background: #f8f9fa;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .course-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.3s ease;
+        }
+
+        .favorite-item:hover .course-image {
+            transform: scale(1.1);
+        }
+
+        .course-info-wrapper {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            flex: 1;
+            min-width: 0;
+        }
+
+        .favorite-item .course-name {
+            font-size: 0.95rem;
+            color: #333;
+            font-weight: 600;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .course-level-badge {
+            padding: 3px 8px;
+            border-radius: 8px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            display: inline-block;
+            align-self: flex-start;
+        }
+
+        .course-level-badge.level-初級,
+        .course-level-badge.level-beginner {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .course-level-badge.level-中級,
+        .course-level-badge.level-intermediate {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .course-level-badge.level-高級,
+        .course-level-badge.level-advanced {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .favorites-footer {
+            text-align: center;
+            padding-top: 15px;
+            border-top: 2px solid #f0f0f0;
+            margin-top: 15px;
+        }
+
+        .favorites-count {
+            margin: 0;
+            color: #666;
+            font-size: 0.9rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .favorites-count i {
+            color: #e74c3c;
+        }
+
+        .empty-favorites {
+            text-align: center;
+            padding: 40px 20px;
+            color: #999;
+        }
+
+        .empty-favorites i {
+            font-size: 3rem;
+            color: #ddd;
+            margin-bottom: 15px;
+        }
+
+        .empty-favorites p {
+            margin: 0 0 8px 0;
+            color: #666;
+            font-weight: 500;
+        }
+
+        .empty-favorites small {
+            color: #999;
+            font-size: 0.85rem;
+        }
+
+        /* 我的收藏區塊樣式 */
+        .favorites-section {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+        }
+
+        .favorites-preview {
+            margin-top: 20px;
+        }
+
+        /* 響應式設計 */
+        @media (max-width: 768px) {
+            .favorite-item {
+                padding: 10px 12px;
+                font-size: 0.9rem;
+            }
+
+            .favorite-item .course-name {
+                font-size: 0.9rem;
+            }
+        }
+    </style>
+</body>
+</html>

@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>API 使用範例 - 需要身份驗證的 API</title>
+    <link rel="stylesheet" href="index.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <div class="registration-card">
+            <div class="header">
+                <div class="logo">
+                    <i class="fas fa-code"></i>
+                    <h1>API 使用範例</h1>
+                </div>
+                <p class="subtitle">需要身份驗證的 API 範例</p>
+            </div>
+
+            <div class="main-content">
+                <div class="form-section">
+                    <h3><i class="fas fa-key"></i> 認證設定</h3>
+                    
+                    <div class="form-group">
+                        <label for="baseUrl">API Base URL</label>
+                        <input type="text" id="baseUrl" value="https://example.com/api" placeholder="https://example.com/api">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="token">認證 Token</label>
+                        <input type="text" id="token" value="123456" placeholder="輸入您的認證 token">
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="button" class="btn btn-primary" onclick="setAPIConfig()">
+                            <i class="fas fa-cog"></i> 設定 API 配置
+                        </button>
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <h3><i class="fas fa-bookmark"></i> 書籤 API 測試</h3>
+                    
+                    <div class="form-group">
+                        <label for="itemId">項目 ID</label>
+                        <input type="text" id="itemId" placeholder="輸入要操作的項目 ID">
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="button" class="btn btn-primary" onclick="getBookmarks()">
+                            <i class="fas fa-list"></i> 獲取書籤列表
+                        </button>
+                        <button type="button" class="btn btn-secondary" onclick="addBookmark()">
+                            <i class="fas fa-plus"></i> 添加書籤
+                        </button>
+                        <button type="button" class="btn btn-secondary" onclick="removeBookmark()">
+                            <i class="fas fa-trash"></i> 刪除書籤
+                        </button>
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <h3><i class="fas fa-terminal"></i> API 回應結果</h3>
+                    <div id="apiResult" class="api-result">
+                        <p>點擊上方按鈕來測試 API 功能...</p>
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <h3><i class="fas fa-code"></i> 程式碼範例</h3>
+                    <div class="code-example">
+                        <pre><code>// 設定 API 配置
+window.authAPI.apiClient.baseUrl = 'https://example.com/api';
+window.authAPI.setAPIToken('123456');
+
+// 獲取書籤列表
+let res = await window.authAPI.getBookmarks();
+console.log(res.item_ids);
+
+// 或者使用通用方法
+let res = await window.authAPI.authenticatedRequest('/bookmarks', {
+    method: 'GET'
+});
+let json = await res;
+console.log(json.item_ids);</code></pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="../Private/database/secureDB.js"></script>
+    <script src="../Private/database/userRepository.js"></script>
+    <script src="../Private/database/sessionRepository.js"></script>
+    <script src="../Private/data/coursesData.js"></script>
+    <script src="../Private/auth/api.js"></script>
+    <script src="../Private/auth/session.js"></script>
+    <script src="../Private/favorites/favoritesAPI.js"></script>
+    <script>
+        // 設定 API 配置
+        function setAPIConfig() {
+            const baseUrl = document.getElementById('baseUrl').value;
+            const token = document.getElementById('token').value;
+            
+            if (!baseUrl || !token) {
+                showResult('請輸入 Base URL 和 Token', 'error');
+                return;
+            }
+
+            // 設定 API 客戶端配置
+            window.authAPI.apiClient.baseUrl = baseUrl;
+            window.authAPI.setAPIToken(token);
+            
+            showResult(`API 配置已設定：\nBase URL: ${baseUrl}\nToken: ${token}`, 'success');
+        }
+
+        // 獲取書籤列表
+        async function getBookmarks() {
+            try {
+                showResult('正在獲取書籤列表...', 'info');
+                
+                const result = await window.authAPI.getBookmarks();
+                showResult(`書籤列表獲取成功：\n${JSON.stringify(result, null, 2)}`, 'success');
+            } catch (error) {
+                showResult(`獲取書籤失敗：${error.message}`, 'error');
+            }
+        }
+
+        // 添加書籤
+        async function addBookmark() {
+            const itemId = document.getElementById('itemId').value;
+            
+            if (!itemId) {
+                showResult('請輸入項目 ID', 'error');
+                return;
+            }
+
+            try {
+                showResult(`正在添加書籤 ${itemId}...`, 'info');
+                
+                const result = await window.authAPI.addBookmark(itemId);
+                showResult(`書籤添加成功：\n${JSON.stringify(result, null, 2)}`, 'success');
+            } catch (error) {
+                showResult(`添加書籤失敗：${error.message}`, 'error');
+            }
+        }
+
+        // 刪除書籤
+        async function removeBookmark() {
+            const itemId = document.getElementById('itemId').value;
+            
+            if (!itemId) {
+                showResult('請輸入項目 ID', 'error');
+                return;
+            }
+
+            try {
+                showResult(`正在刪除書籤 ${itemId}...`, 'info');
+                
+                const result = await window.authAPI.removeBookmark(itemId);
+                showResult(`書籤刪除成功：\n${JSON.stringify(result, null, 2)}`, 'success');
+            } catch (error) {
+                showResult(`刪除書籤失敗：${error.message}`, 'error');
+            }
+        }
+
+        // 顯示結果
+        function showResult(message, type = 'info') {
+            const resultDiv = document.getElementById('apiResult');
+            resultDiv.innerHTML = `<pre class="result-${type}">${message}</pre>`;
+        }
+
+        // 頁面載入時初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            showResult('API 範例頁面已載入，請先設定 API 配置，然後測試各種功能。', 'info');
+        });
+    </script>
+
+    <style>
+        .api-result {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 15px;
+            min-height: 100px;
+            border-left: 4px solid #667eea;
+        }
+
+        .api-result pre {
+            margin: 0;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+
+        .result-success {
+            color: #27ae60;
+            background: #d5f4e6;
+            padding: 10px;
+            border-radius: 5px;
+            border-left: 4px solid #27ae60;
+        }
+
+        .result-error {
+            color: #e74c3c;
+            background: #fdf2f2;
+            padding: 10px;
+            border-radius: 5px;
+            border-left: 4px solid #e74c3c;
+        }
+
+        .result-info {
+            color: #3498db;
+            background: #e8f4fd;
+            padding: 10px;
+            border-radius: 5px;
+            border-left: 4px solid #3498db;
+        }
+
+        .code-example {
+            background: #2d3748;
+            color: #e2e8f0;
+            padding: 20px;
+            border-radius: 8px;
+            overflow-x: auto;
+        }
+
+        .code-example pre {
+            margin: 0;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            line-height: 1.5;
+        }
+
+        .code-example code {
+            color: #e2e8f0;
+        }
+    </style>
+</body>
+</html>

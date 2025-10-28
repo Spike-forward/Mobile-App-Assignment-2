@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>清除資料 - 程式教學平台</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: 'Segoe UI', 'Microsoft JhengHei', Arial, sans-serif;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+      }
+
+      .container {
+        background: white;
+        border-radius: 20px;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        padding: 40px;
+        max-width: 500px;
+        width: 100%;
+        text-align: center;
+      }
+
+      .icon {
+        font-size: 64px;
+        color: #e74c3c;
+        margin-bottom: 20px;
+      }
+
+      h1 {
+        color: #1f2937;
+        margin-bottom: 10px;
+      }
+
+      p {
+        color: #666;
+        margin-bottom: 30px;
+        line-height: 1.6;
+      }
+
+      .warning {
+        background: #fef3c7;
+        border-left: 4px solid #f59e0b;
+        padding: 15px;
+        border-radius: 8px;
+        margin-bottom: 30px;
+        text-align: left;
+      }
+
+      .warning strong {
+        color: #92400e;
+      }
+
+      .data-info {
+        background: #f9fafb;
+        padding: 20px;
+        border-radius: 8px;
+        margin-bottom: 30px;
+        text-align: left;
+      }
+
+      .data-info h3 {
+        color: #1f2937;
+        margin-bottom: 15px;
+        font-size: 1.1rem;
+      }
+
+      .data-item {
+        display: flex;
+        justify-content: space-between;
+        padding: 8px 0;
+        border-bottom: 1px solid #e5e7eb;
+      }
+
+      .data-item:last-child {
+        border-bottom: none;
+      }
+
+      .data-label {
+        color: #666;
+      }
+
+      .data-value {
+        color: #1f2937;
+        font-weight: 600;
+      }
+
+      .btn {
+        width: 100%;
+        padding: 15px;
+        border: none;
+        border-radius: 10px;
+        font-size: 1rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        margin: 10px 0;
+      }
+
+      .btn-danger {
+        background: #e74c3c;
+        color: white;
+      }
+
+      .btn-danger:hover {
+        background: #c0392b;
+        transform: translateY(-2px);
+        box-shadow: 0 10px 20px rgba(231, 76, 60, 0.3);
+      }
+
+      .btn-secondary {
+        background: #6c757d;
+        color: white;
+      }
+
+      .btn-secondary:hover {
+        background: #5a6268;
+      }
+
+      .message {
+        padding: 15px;
+        border-radius: 8px;
+        margin: 20px 0;
+        display: none;
+      }
+
+      .message.success {
+        background: #d1fae5;
+        color: #065f46;
+        border: 1px solid #10b981;
+      }
+
+      .message.error {
+        background: #fee2e2;
+        color: #991b1b;
+        border: 1px solid #ef4444;
+      }
+
+      .back-link {
+        margin-top: 20px;
+      }
+
+      .back-link a {
+        color: #667eea;
+        text-decoration: none;
+        transition: color 0.3s ease;
+      }
+
+      .back-link a:hover {
+        color: #764ba2;
+        text-decoration: underline;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="container">
+      <div class="icon">⚠️</div>
+      <h1>清除所有儲存的資料</h1>
+      <p>此操作將清除所有本地儲存的資料，包括使用者帳戶、會話和收藏內容。</p>
+
+      <div class="warning">
+        <strong>⚠️ 警告：</strong>此操作無法復原！所有資料將永久刪除。
+      </div>
+
+      <div class="data-info">
+        <h3>即將清除的資料</h3>
+        <div class="data-item">
+          <span class="data-label">使用者帳戶</span>
+          <span class="data-value" id="usersCount">載入中...</span>
+        </div>
+        <div class="data-item">
+          <span class="data-label">會話資料</span>
+          <span class="data-value" id="sessionsCount">載入中...</span>
+        </div>
+        <div class="data-item">
+          <span class="data-label">收藏內容</span>
+          <span class="data-value" id="favoritesCount">載入中...</span>
+        </div>
+        <div class="data-item">
+          <span class="data-label">認證狀態</span>
+          <span class="data-value" id="authStatus">載入中...</span>
+        </div>
+      </div>
+
+      <div class="message" id="message"></div>
+
+      <button class="btn btn-danger" onclick="clearAllData()">
+        🗑️ 確認清除所有資料
+      </button>
+
+      <button class="btn btn-secondary" onclick="goBack()">
+        ← 返回上一頁
+      </button>
+
+      <div class="back-link">
+        <a href="index.html">返回註冊頁面</a>
+      </div>
+    </div>
+
+    <script src="../Private/database/secureDB.js"></script>
+    <script src="../Private/auth/session.js"></script>
+    <script>
+      // 載入資料統計
+      function loadDataInfo() {
+        try {
+          if (window.secureDB) {
+            const stats = window.secureDB.getStats();
+            document.getElementById('usersCount').textContent = stats.users.count || 0;
+            document.getElementById('sessionsCount').textContent = stats.sessions.count || 0;
+            document.getElementById('favoritesCount').textContent = stats.favorites.count || 0;
+          }
+
+          const authToken = localStorage.getItem('auth_token');
+          document.getElementById('authStatus').textContent = authToken ? '已登入' : '未登入';
+        } catch (error) {
+          console.error('載入資料資訊錯誤:', error);
+          document.getElementById('usersCount').textContent = '錯誤';
+          document.getElementById('sessionsCount').textContent = '錯誤';
+          document.getElementById('favoritesCount').textContent = '錯誤';
+        }
+      }
+
+      // 清除所有資料
+      function clearAllData() {
+        const confirmed = confirm('您確定要清除所有資料嗎？此操作無法復原！');
+
+        if (!confirmed) {
+          return;
+        }
+
+        try {
+          // 顯示處理訊息
+          showMessage('正在清除資料...', 'info');
+
+          // 使用 secureDB 清除所有資料
+          if (window.secureDB) {
+            const result = window.secureDB.clearAllData();
+
+            if (result.success) {
+              // 清除 session manager
+              if (window.sessionManager) {
+                window.sessionManager.clearSession();
+              }
+
+              showMessage('✅ 所有資料已成功清除！', 'success');
+
+              // 2秒後重新載入頁面
+              setTimeout(() => {
+                location.reload();
+              }, 2000);
+            } else {
+              showMessage('❌ 清除失敗：' + result.error, 'error');
+            }
+          } else {
+            // 如果 secureDB 未載入，手動清除 localStorage
+            localStorage.clear();
+            showMessage('✅ 基本資料已清除（部分資料可能在資料庫中）', 'success');
+
+            setTimeout(() => {
+              location.reload();
+            }, 2000);
+          }
+        } catch (error) {
+          console.error('清除資料錯誤:', error);
+          showMessage('❌ 清除失敗：' + error.message, 'error');
+        }
+      }
+
+      // 顯示訊息
+      function showMessage(text, type) {
+        const messageEl = document.getElementById('message');
+        messageEl.textContent = text;
+        messageEl.className = `message ${type}`;
+        messageEl.style.display = 'block';
+      }
+
+      // 返回上一頁
+      function goBack() {
+        if (window.history.length > 1) {
+          window.history.back();
+        } else {
+          window.location.href = 'index.html';
+        }
+      }
+
+      // 頁面載入時顯示資料統計
+      window.addEventListener('DOMContentLoaded', function () {
+        loadDataInfo();
+      });
+    </script>
+  </body>
+
+</html>

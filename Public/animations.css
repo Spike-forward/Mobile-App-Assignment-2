@@ -1,0 +1,660 @@
+/* ========================================
+   動畫和交互效果優化 - 流暢的操作體驗
+   ======================================== */
+
+/* 基礎動畫變數 */
+:root {
+  --ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
+  --ease-out: cubic-bezier(0, 0, 0.2, 1);
+  --ease-in: cubic-bezier(0.4, 0, 1, 1);
+  --bounce: cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  --spring: cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+/* ========================================
+   頁面載入動畫
+   ======================================== */
+
+/* 頁面進入動畫 */
+@keyframes pageEnter {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.container {
+  animation: pageEnter 0.6s var(--ease-out);
+}
+
+/* 卡片進入動畫 */
+@keyframes cardSlideUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.registration-card,
+.auth-card {
+  animation: cardSlideUp 0.8s var(--ease-out) 0.2s both;
+}
+
+/* 表單元素漸入動畫 */
+@keyframes formElementFadeIn {
+  from {
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.form-section {
+  animation: formElementFadeIn 0.6s var(--ease-out);
+}
+
+.form-section:nth-child(1) { animation-delay: 0.1s; }
+.form-section:nth-child(2) { animation-delay: 0.2s; }
+.form-section:nth-child(3) { animation-delay: 0.3s; }
+.form-section:nth-child(4) { animation-delay: 0.4s; }
+
+/* ========================================
+   按鈕交互動畫
+   ======================================== */
+
+/* 按鈕點擊動畫 */
+@keyframes buttonPress {
+  0% { transform: scale(1); }
+  50% { transform: scale(0.95); }
+  100% { transform: scale(1); }
+}
+
+.btn {
+  position: relative;
+  overflow: hidden;
+}
+
+.btn:active {
+  animation: buttonPress 0.15s var(--ease-out);
+}
+
+/* 按鈕懸停波紋效果 */
+.btn::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.3);
+  transform: translate(-50%, -50%);
+  transition: width 0.6s, height 0.6s;
+}
+
+.btn:hover::after {
+  width: 300px;
+  height: 300px;
+}
+
+/* 主要按鈕特殊效果 */
+.btn-primary {
+  position: relative;
+  overflow: hidden;
+}
+
+.btn-primary::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+  transition: left 0.5s;
+}
+
+.btn-primary:hover::before {
+  left: 100%;
+}
+
+/* ========================================
+   表單交互動畫
+   ======================================== */
+
+/* 輸入框聚焦動畫 */
+.form-group input,
+.form-group select,
+.form-group textarea {
+  transition: all 0.3s var(--ease-out);
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+  transform: translateY(-2px);
+  box-shadow: 
+    0 0 0 3px rgba(102, 126, 234, 0.1),
+    0 8px 25px -5px rgba(0, 0, 0, 0.1);
+}
+
+/* 錯誤狀態動畫 */
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-5px); }
+  75% { transform: translateX(5px); }
+}
+
+.form-group input:invalid:not(:focus):not(:placeholder-shown) {
+  animation: shake 0.5s var(--ease-out);
+}
+
+/* 錯誤訊息淡入 */
+@keyframes errorFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.error-message {
+  animation: errorFadeIn 0.3s var(--ease-out);
+}
+
+/* 複選框動畫 */
+.checkbox-label {
+  transition: all 0.2s var(--ease-out);
+}
+
+.checkbox-label:hover {
+  transform: translateX(5px);
+}
+
+.checkbox-label input[type="checkbox"]:checked + .checkmark {
+  animation: checkmarkBounce 0.4s var(--bounce);
+}
+
+@keyframes checkmarkBounce {
+  0% { transform: scale(0); }
+  50% { transform: scale(1.2); }
+  100% { transform: scale(1); }
+}
+
+/* ========================================
+   導航動畫
+   ======================================== */
+
+/* 導航連結懸停效果 */
+.nav-link {
+  position: relative;
+  overflow: hidden;
+}
+
+.nav-link::before {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 0;
+  height: 2px;
+  background: var(--color-primary);
+  transition: width 0.3s var(--ease-out);
+}
+
+.nav-link:hover::before,
+.nav-link.active::before {
+  width: 100%;
+}
+
+/* 導航品牌動畫 */
+.nav-brand {
+  transition: transform 0.3s var(--ease-out);
+}
+
+.nav-brand:hover {
+  transform: scale(1.05);
+}
+
+.nav-brand i {
+  transition: transform 0.3s var(--ease-out);
+}
+
+.nav-brand:hover i {
+  transform: rotate(360deg);
+}
+
+/* ========================================
+   卡片動畫
+   ======================================== */
+
+/* 卡片懸停效果 */
+.info-card,
+.course-card,
+.course-preview-card,
+.favorite-preview-card {
+  transition: all 0.3s var(--ease-out);
+}
+
+.info-card:hover,
+.course-card:hover,
+.course-preview-card:hover,
+.favorite-preview-card:hover {
+  transform: translateY(-8px) scale(1.02);
+}
+
+/* 卡片圖標動畫 */
+.card-icon,
+.course-icon {
+  transition: all 0.3s var(--ease-out);
+}
+
+.info-card:hover .card-icon,
+.course-card:hover .course-icon {
+  transform: scale(1.1) rotate(5deg);
+}
+
+/* 課程項目展開動畫 */
+.course-item {
+  transition: all 0.3s var(--ease-out);
+}
+
+.course-header {
+  transition: all 0.2s var(--ease-out);
+}
+
+.course-details {
+  transition: max-height 0.4s var(--ease-out), padding 0.3s var(--ease-out);
+}
+
+.expand-icon {
+  transition: transform 0.3s var(--ease-out);
+}
+
+/* 課程圖片載入動畫 */
+@keyframes imageLoad {
+  from {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.course-image {
+  animation: imageLoad 0.6s var(--ease-out);
+}
+
+/* ========================================
+   通知動畫
+   ======================================== */
+
+/* 通知進入動畫 */
+@keyframes notificationSlideIn {
+  from {
+    transform: translateX(100%) scale(0.8);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0) scale(1);
+    opacity: 1;
+  }
+}
+
+.notification {
+  animation: notificationSlideIn 0.4s var(--bounce);
+}
+
+/* 通知退出動畫 */
+@keyframes notificationSlideOut {
+  from {
+    transform: translateX(0) scale(1);
+    opacity: 1;
+  }
+  to {
+    transform: translateX(100%) scale(0.8);
+    opacity: 0;
+  }
+}
+
+.notification.removing {
+  animation: notificationSlideOut 0.3s var(--ease-in);
+}
+
+/* ========================================
+   載入動畫
+   ======================================== */
+
+/* 旋轉載入動畫 */
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.loading::after {
+  animation: spin 1s linear infinite;
+}
+
+/* 脈衝載入動畫 */
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+.loading {
+  animation: pulse 2s ease-in-out infinite;
+}
+
+/* 骨架屏動畫 */
+@keyframes skeleton {
+  0% { background-position: -200px 0; }
+  100% { background-position: calc(200px + 100%) 0; }
+}
+
+.skeleton {
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200px 100%;
+  animation: skeleton 1.5s infinite;
+}
+
+/* ========================================
+   滾動動畫
+   ======================================== */
+
+/* 滾動進入視圖動畫 */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.fade-in-up {
+  animation: fadeInUp 0.6s var(--ease-out);
+}
+
+/* 滾動觸發動畫 */
+.scroll-animate {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: all 0.6s var(--ease-out);
+}
+
+.scroll-animate.animate {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ========================================
+   微交互動畫
+   ======================================== */
+
+/* 點擊反饋動畫 */
+@keyframes clickFeedback {
+  0% { transform: scale(1); }
+  50% { transform: scale(0.95); }
+  100% { transform: scale(1); }
+}
+
+.clickable {
+  cursor: pointer;
+  transition: transform 0.1s var(--ease-out);
+}
+
+.clickable:active {
+  animation: clickFeedback 0.15s var(--ease-out);
+}
+
+/* 懸停提升效果 */
+.hover-lift {
+  transition: transform 0.3s var(--ease-out);
+}
+
+.hover-lift:hover {
+  transform: translateY(-4px);
+}
+
+/* 懸停縮放效果 */
+.hover-scale {
+  transition: transform 0.3s var(--ease-out);
+}
+
+.hover-scale:hover {
+  transform: scale(1.05);
+}
+
+/* 懸停旋轉效果 */
+.hover-rotate {
+  transition: transform 0.3s var(--ease-out);
+}
+
+.hover-rotate:hover {
+  transform: rotate(5deg);
+}
+
+/* ========================================
+   表單驗證動畫
+   ======================================== */
+
+/* 成功狀態動畫 */
+@keyframes successPulse {
+  0% { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.4); }
+  70% { box-shadow: 0 0 0 10px rgba(34, 197, 94, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0); }
+}
+
+.form-group input:valid:not(:placeholder-shown) {
+  animation: successPulse 0.6s ease-out;
+}
+
+/* 錯誤狀態動畫 */
+@keyframes errorPulse {
+  0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4); }
+  70% { box-shadow: 0 0 0 10px rgba(239, 68, 68, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+}
+
+.form-group input:invalid:not(:placeholder-shown) {
+  animation: errorPulse 0.6s ease-out;
+}
+
+/* ========================================
+   頁面轉場動畫
+   ======================================== */
+
+/* 頁面離開動畫 */
+@keyframes pageExit {
+  from {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+}
+
+.page-exit {
+  animation: pageExit 0.3s var(--ease-in);
+}
+
+/* 頁面進入動畫 */
+@keyframes pageEnter {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.page-enter {
+  animation: pageEnter 0.6s var(--ease-out);
+}
+
+/* ========================================
+   響應式動畫調整
+   ======================================== */
+
+/* 在小螢幕上減少動畫 */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* 在小螢幕上簡化動畫 */
+@media (max-width: 768px) {
+  .btn:hover::after {
+    width: 200px;
+    height: 200px;
+  }
+  
+  .info-card:hover,
+  .course-card:hover,
+  .course-preview-card:hover {
+    transform: translateY(-4px) scale(1.01);
+  }
+  
+  .hover-lift:hover {
+    transform: translateY(-2px);
+  }
+  
+  .hover-scale:hover {
+    transform: scale(1.02);
+  }
+}
+
+/* ========================================
+   性能優化
+   ======================================== */
+
+/* 使用 transform 和 opacity 進行動畫以獲得最佳性能 */
+.will-change-transform {
+  will-change: transform;
+}
+
+.will-change-opacity {
+  will-change: opacity;
+}
+
+.will-change-auto {
+  will-change: auto;
+}
+
+/* GPU 加速 */
+.gpu-accelerated {
+  transform: translateZ(0);
+  backface-visibility: hidden;
+  perspective: 1000px;
+}
+
+/* ========================================
+   自定義動畫類
+   ======================================== */
+
+/* 淡入動畫 */
+.fade-in {
+  animation: fadeIn 0.6s var(--ease-out);
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* 滑入動畫 */
+.slide-in-left {
+  animation: slideInLeft 0.6s var(--ease-out);
+}
+
+@keyframes slideInLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.slide-in-right {
+  animation: slideInRight 0.6s var(--ease-out);
+}
+
+@keyframes slideInRight {
+  from {
+    opacity: 0;
+    transform: translateX(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* 彈跳動畫 */
+.bounce-in {
+  animation: bounceIn 0.8s var(--bounce);
+}
+
+@keyframes bounceIn {
+  0% {
+    opacity: 0;
+    transform: scale(0.3);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.05);
+  }
+  70% {
+    transform: scale(0.9);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* 旋轉進入動畫 */
+.rotate-in {
+  animation: rotateIn 0.6s var(--ease-out);
+}
+
+@keyframes rotateIn {
+  from {
+    opacity: 0;
+    transform: rotate(-180deg) scale(0.5);
+  }
+  to {
+    opacity: 1;
+    transform: rotate(0deg) scale(1);
+  }
+}
