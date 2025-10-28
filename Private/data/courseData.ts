@@ -7,6 +7,7 @@ interface Course {
   category: string;       // 分類
   tags: string[];         // 標籤陣列
   imageUrl: string;       // 課程封面
+  image: string;          // 課程圖片
   videoUrl: string;       // 教學影片
 }
 
@@ -35,6 +36,7 @@ export const courses: Course[] = [
     category: '程式入門',
     tags: ['Python', '程式設計', '入門課程'],
     imageUrl: 'https://images.unsplash.com/photo-1526379095098-d400fd0bf935?w=400&h=300&fit=crop',
+    image: 'https://images.unsplash.com/photo-1526379095098-d400fd0bf935?w=400&h=300&fit=crop',
     videoUrl: 'https://www.youtube.com/embed/kqtD5dpn9C8'
   },
   {
@@ -45,6 +47,7 @@ export const courses: Course[] = [
     category: '網頁開發',
     tags: ['JavaScript', 'ES6', '非同步'],
     imageUrl: 'https://images.unsplash.com/photo-1579468118864-1b9ea3c0db4a?w=400&h=300&fit=crop',
+    image: 'https://images.unsplash.com/photo-1467232004584-a241de8bcf5d?w=400&h=300&fit=crop',
     videoUrl: 'https://www.youtube.com/embed/9YddVVsdG5A'
   },
   {
@@ -55,6 +58,7 @@ export const courses: Course[] = [
     category: '網頁開發',
     tags: ['React', '前端框架', 'Hooks'],
     imageUrl: 'https://images.unsplash.com/photo-1633356122544-f134324a6cee?w=400&h=300&fit=crop',
+    image: 'https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=400&h=300&fit=crop',
     videoUrl: 'https://www.youtube.com/embed/SqcY0GlETPk'
   },
   {
@@ -65,6 +69,7 @@ export const courses: Course[] = [
     category: '網頁開發',
     tags: ['Vue.js', '前端框架', '實戰專案'],
     imageUrl: 'https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=400&h=300&fit=crop',
+    image: 'https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=400&h=300&fit=crop',
     videoUrl: 'https://www.youtube.com/embed/qZXt1Aom3Cs'
   },
   {
@@ -75,6 +80,7 @@ export const courses: Course[] = [
     category: '網頁開發',
     tags: ['Node.js', '後端開發', 'API'],
     imageUrl: 'https://images.unsplash.com/photo-1627398242454-45a1465c2479?w=400&h=300&fit=crop',
+    image: 'https://images.unsplash.com/photo-1544383835-bda2bc66a55d?w=400&h=300&fit=crop',
     videoUrl: 'https://www.youtube.com/embed/fBNz5xF-Kx4'
   },
   {
@@ -85,6 +91,7 @@ export const courses: Course[] = [
     category: '資料科學',
     tags: ['Python', '資料分析', 'Pandas'],
     imageUrl: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=400&h=300&fit=crop',
+    image: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=400&h=300&fit=crop',
     videoUrl: 'https://www.youtube.com/embed/gtjxAH8uaP0'
   },
   {
@@ -95,6 +102,7 @@ export const courses: Course[] = [
     category: '資料科學',
     tags: ['機器學習', 'Python', 'Scikit-learn'],
     imageUrl: 'https://images.unsplash.com/photo-1677442136019-21780ecad995?w=400&h=300&fit=crop',
+    image: 'https://images.unsplash.com/photo-1677442136019-21780ecad995?w=400&h=300&fit=crop',
     videoUrl: 'https://www.youtube.com/embed/aircAruvnKk'
   },
   {
@@ -105,6 +113,7 @@ export const courses: Course[] = [
     category: '資料科學',
     tags: ['深度學習', 'TensorFlow', 'PyTorch'],
     imageUrl: 'https://images.unsplash.com/photo-1620712943543-bcc4688e7485?w=400&h=300&fit=crop',
+    image: 'https://images.unsplash.com/photo-1620712943543-bcc4688e7485?w=400&h=300&fit=crop',
     videoUrl: 'https://www.youtube.com/embed/aircAruvnKk'
   },
   {
@@ -115,6 +124,7 @@ export const courses: Course[] = [
     category: '程式入門',
     tags: ['Java', '物件導向', '程式設計'],
     imageUrl: 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=400&h=300&fit=crop',
+    image: 'https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=400&h=300&fit=crop',
     videoUrl: 'https://www.youtube.com/embed/grEKMHGYyns'
   },
   {
@@ -125,6 +135,7 @@ export const courses: Course[] = [
     category: '系統設計',
     tags: ['C++', '系統程式設計', '記憶體管理'],
     imageUrl: 'https://images.unsplash.com/photo-1516116216624-53e697fedbea?w=400&h=300&fit=crop',
+    image: 'https://images.unsplash.com/photo-1550751827-4bd374c3f58b?w=400&h=300&fit=crop',
     videoUrl: 'https://www.youtube.com/embed/vLnPwxZdW4Y'
   },
   {
@@ -135,6 +146,7 @@ export const courses: Course[] = [
     category: '行動開發',
     tags: ['Swift', 'iOS', '行動開發'],
     imageUrl: 'https://images.unsplash.com/photo-1512941937669-90a1b58e7e9c?w=400&h=300&fit=crop',
+    image: 'https://images.unsplash.com/photo-1555774698-0b77e0d5fac6?w=400&h=300&fit=crop',
     videoUrl: 'https://www.youtube.com/embed/09TeUXjzpKs'
   },
   {
@@ -145,6 +157,7 @@ export const courses: Course[] = [
     category: '行動開發',
     tags: ['Kotlin', 'Android', '行動開發'],
     imageUrl: 'https://images.unsplash.com/photo-1512941937669-90a1b58e7e9c?w=400&h=300&fit=crop',
+    image: 'https://images.unsplash.com/photo-1512941937669-90a1b58e7e9c?w=400&h=300&fit=crop',
     videoUrl: 'https://www.youtube.com/embed/F9UC9DY-vIU'
   },
   {
@@ -155,6 +168,7 @@ export const courses: Course[] = [
     category: '行動開發',
     tags: ['Flutter', 'Dart', '跨平台'],
     imageUrl: 'https://images.unsplash.com/photo-1512941937669-90a1b58e7e9c?w=400&h=300&fit=crop',
+    image: 'https://images.unsplash.com/photo-1618477388954-7852f32655ec?w=400&h=300&fit=crop',
     videoUrl: 'https://www.youtube.com/embed/1gD_H4rT1hI'
   },
   {
@@ -165,6 +179,7 @@ export const courses: Course[] = [
     category: '演算法',
     tags: ['資料結構', '演算法', '程式設計'],
     imageUrl: 'https://images.unsplash.com/photo-1555949963-aa79dcee981c?w=400&h=300&fit=crop',
+    image: 'https://images.unsplash.com/photo-1555949963-aa79dcee981c?w=400&h=300&fit=crop',
     videoUrl: 'https://www.youtube.com/embed/8hly31xKli0'
   },
   {
@@ -175,6 +190,7 @@ export const courses: Course[] = [
     category: '演算法',
     tags: ['動態規劃', '演算法', '優化'],
     imageUrl: 'https://images.unsplash.com/photo-1555949963-aa79dcee981c?w=400&h=300&fit=crop',
+    image: 'https://images.unsplash.com/photo-1555949963-aa79dcee981c?w=400&h=300&fit=crop',
     videoUrl: 'https://www.youtube.com/embed/oBt53YbR9Kk'
   },
   {
@@ -185,6 +201,7 @@ export const courses: Course[] = [
     category: '演算法',
     tags: ['圖論', '演算法', '最短路徑'],
     imageUrl: 'https://images.unsplash.com/photo-1555949963-aa79dcee981c?w=400&h=300&fit=crop',
+    image: 'https://images.unsplash.com/photo-1555949963-aa79dcee981c?w=400&h=300&fit=crop',
     videoUrl: 'https://www.youtube.com/embed/09_LlHjoEiY'
   },
   {
@@ -195,6 +212,7 @@ export const courses: Course[] = [
     category: '系統設計',
     tags: ['微服務', '架構設計', '容器化'],
     imageUrl: 'https://images.unsplash.com/photo-1558494949-ef010cbdcc31?w=400&h=300&fit=crop',
+    image: 'https://images.unsplash.com/photo-1558494949-ef010cbdcc31?w=400&h=300&fit=crop',
     videoUrl: 'https://www.youtube.com/embed/1qk1_9HZkto'
   },
   {
@@ -205,6 +223,7 @@ export const courses: Course[] = [
     category: '系統設計',
     tags: ['分散式系統', '系統設計', '容錯'],
     imageUrl: 'https://images.unsplash.com/photo-1558494949-ef010cbdcc31?w=400&h=300&fit=crop',
+    image: 'https://images.unsplash.com/photo-1558494949-ef010cbdcc31?w=400&h=300&fit=crop',
     videoUrl: 'https://www.youtube.com/embed/xA5xN4vJ50Y'
   },
   {
@@ -215,6 +234,7 @@ export const courses: Course[] = [
     category: '系統設計',
     tags: ['Go', '並發程式設計', '微服務'],
     imageUrl: 'https://images.unsplash.com/photo-1516116216624-53e697fedbea?w=400&h=300&fit=crop',
+    image: 'https://images.unsplash.com/photo-1516116216624-53e697fedbea?w=400&h=300&fit=crop',
     videoUrl: 'https://www.youtube.com/embed/YS4e4q9oBaU'
   },
   {
@@ -225,6 +245,7 @@ export const courses: Course[] = [
     category: '系統設計',
     tags: ['Rust', '系統程式設計', '記憶體安全'],
     imageUrl: 'https://images.unsplash.com/photo-1516116216624-53e697fedbea?w=400&h=300&fit=crop',
+    image: 'https://images.unsplash.com/photo-1516116216624-53e697fedbea?w=400&h=300&fit=crop',
     videoUrl: 'https://www.youtube.com/embed/5C_HPTJg5ek'
   },
   {
@@ -235,6 +256,7 @@ export const courses: Course[] = [
     category: '網頁開發',
     tags: ['TypeScript', '型別系統', '泛型'],
     imageUrl: 'https://images.unsplash.com/photo-1516116216624-53e697fedbea?w=400&h=300&fit=crop',
+    image: 'https://images.unsplash.com/photo-1534972195531-d756b9bfa9f2?w=400&h=300&fit=crop',
     videoUrl: 'https://www.youtube.com/embed/BwuLxPH8IDs'
   }
 ];
@@ -262,14 +284,14 @@ export function getCoursesByLevel(level: CourseLevel): Course[] {
 
 export function searchCourses(searchTerm: string, category: string = ''): Course[] {
   const filtered = courses.filter(course => {
-    const matchesSearch = !searchTerm || 
+    const matchesSearch = !searchTerm ||
       course.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
       course.language.toLowerCase().includes(searchTerm.toLowerCase()) ||
       course.details.toLowerCase().includes(searchTerm.toLowerCase()) ||
       course.tags.some(tag => tag.toLowerCase().includes(searchTerm.toLowerCase()));
-    
+
     const matchesCategory = !category || course.category === category;
-    
+
     return matchesSearch && matchesCategory;
   });
 
@@ -295,4 +317,25 @@ if (typeof window !== 'undefined') {
     getAllCategories: getAllCategories,
     getAllLanguages: getAllLanguages
   };
+
+  // 為了兼容性，同時將 courses 放入 CourseData.coursesData
+  // 這樣既有舊系統使用 coursesData.js 的地方可以繼續工作
+  if (window.coursesData) {
+    // coursesData 已經由 coursesData.js 載入，不需要再設置
+    console.log('coursesData.js 已載入，包含', window.coursesData.length, '個課程');
+  } else {
+    // 如果 coursesData 未載入，設置一個兼容的版本
+    window.coursesData = courses.map((course, index) => ({
+      id: index + 1,
+      title: course.title,
+      level: course.level === '入門' ? '初級' : course.level === '進階' ? '高級' : course.level,
+      image: course.image,
+      imageUrl: course.imageUrl,
+      url: course.videoUrl,
+      videoUrl: course.videoUrl,
+      language: course.language,
+      category: course.category
+    }));
+    console.log('已創建兼容的 coursesData，包含', window.coursesData.length, '個課程');
+  }
 }

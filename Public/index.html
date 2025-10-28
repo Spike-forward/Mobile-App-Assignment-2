@@ -237,6 +237,7 @@
     <script src="../Private/auth/api.js"></script>
     <script src="../Private/auth/session.js"></script>
     <script src="../Private/favorites/favoritesAPI.js"></script>
+    <script src="clearData.js"></script>
     <script src="animations.js"></script>
     <script>
 
@@ -603,6 +604,9 @@
           return;
         }
 
+        // 載入課程選項
+        loadCourseSelection();
+
         // 添加實時學號驗證
         document.getElementById('studentId').addEventListener('input', validateStudentIdRealTime);
         document.getElementById('studentId').addEventListener('keypress', restrictStudentIdInput);
@@ -610,6 +614,11 @@
 
         // 添加實時密碼驗證
         document.getElementById('password').addEventListener('input', validatePasswordRealTime);
+
+        // 顯示清除資料工具的提示
+        console.log('%c🧹 清除資料工具已載入！', 'color: #e74c3c; font-weight: bold; font-size: 16px;');
+        console.log('%c💡 在控制台輸入 clearAllStoredData() 清除所有資料', 'color: #667eea; font-size: 14px;');
+        console.log('%c💡 或在控制台輸入 showClearDataHelp() 查看所有可用命令', 'color: #667eea; font-size: 14px;');
       });
     </script>
   </body>
